@@ -1,0 +1,26 @@
+---
+title: "FIS project : main notebook"
+output: html_notebook
+---
+### 1) Cargamos los datos
+
+Para empezar, cargamos el train set y el test set.
+```{r}
+df_train <-read.csv2("data/train.csv")
+df_test <- read.csv2("data/test.csv")
+```
+
+Verificamos las dimensiones del dataset de entrenamiento y del dataset de test.
+```{r}
+dim_train = dim(df_train)
+print(paste("El cunjunto de entrenamiento tiene ", dim_train[1],"valores y ", dim_train[2], "variables." ))
+
+dim_test = dim(df_test)
+print(paste("El cunjunto de test tiene ", dim_test[1],"valores y ", dim_test[2], "variables." ))
+
+```
+
+Visualizamos el header del dataset de entrenamiento para ver un poco los datos.
+```{r}
+head(df_train)
+```
