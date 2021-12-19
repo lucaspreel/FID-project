@@ -24,3 +24,125 @@ Visualizamos el header del dataset de entrenamiento para ver un poco los datos.
 ```{r}
 head(df_train)
 ```
+
+
+### 2) Exploración y visualización de los datos
+
+Para cada variable, vamos a visuzalizar los valores del dataset de entrenamiento.
+
+#### Visualización de la variable "age"
+```{r}
+
+# Cargamos la librería tidyverse para manipular los datos más facilmente
+
+library(tidyverse)
+
+# creamos una variable que cuenta para cada edad el número de clientes del dataset que tienen esa edad
+
+edad <- df_train %>%
+  group_by(df_train$age) %>%
+  count()
+
+# visualizamos eso en un gráfico
+
+ggplot(edad, aes(x = `df_train$age` ,y = edad$n)) +
+  geom_point() +
+  ggtitle("Número de clientes en función de la edad") +
+  labs(x="edad", y = "número de clientes") +
+  xlim(20,90)
+```
+Podemos ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos tienen entre 30 y 40 años.
+
+#### Visualización de la variable "job"
+```{r}
+
+```
+
+#### Visualización de la variable "marital"
+```{r}
+
+```
+
+#### Visualización de la variable "education"
+```{r}
+
+```
+
+#### Visualización de la variable "default"
+```{r}
+
+```
+
+#### Visualización de la variable "balance"
+```{r}
+
+```
+
+#### Visualización de la variable "housing"
+```{r}
+
+```
+
+#### Visualización de la variable "loan"
+```{r}
+
+```
+
+#### Visualización de la variable "contact"
+```{r}
+
+```
+
+#### Visualización de la variable "day"
+```{r}
+
+```
+
+#### Visualización de la variable "month"
+```{r}
+
+```
+
+#### Visualización de la variable "duration"
+```{r}
+
+```
+
+#### Visualización de la variable "campaign"
+```{r}
+
+```
+
+#### Visualización de la variable "pdays"
+```{r}
+
+```
+
+#### Visualización de la variable "previous"
+```{r}
+
+```
+
+#### Visualización de la variable "poutcome"
+```{r}
+
+```
+
+#### Visualización de la clase final
+```{r}
+
+```
+
+### 3) Entrenamiento de clasificadores
+Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
+
+```{r}
+
+```
+
+### 4) Aplicación de algoritmos de clustering
+
+Para terminar, vamos a aplicar varios algoritmos de clustering para ver si el conjunto de clientes se puede dividir en varios subconjuntos con clientes que se aparecen, y comparar los resultados de estos algoritmos de clustering.
+```{r}
+
+```
