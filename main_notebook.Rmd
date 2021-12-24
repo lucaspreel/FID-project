@@ -56,6 +56,28 @@ Podemos ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos t
 #### Visualización de la variable "job"
 ```{r}
 
+# creamos una variable que cuenta para cada job el número de clientes del dataset que tienen esa edad
+
+job <- df_train %>%
+  group_by(df_train$job) %>%
+  count() %>%
+  arrange(desc(n))
+
+# visualizamos eso en un gráfico
+
+# 
+
+install.packages("viridis")
+library("viridis")
+
+pie(x=job$n, labels = job$`df_train$job`, radius = 1, main = "Número de clientes en función del job", col = viridis(length(x)))
+  
+
+# ggplot(job, aes(x = `df_train$job` ,y = job$n)) +
+#  ggtitle("Número de clientes en función del job") +
+#  labs(x="job", y = "número de clientes") +
+#  geom_histogram(stat="identity")
+
 ```
 
 #### Visualización de la variable "marital"

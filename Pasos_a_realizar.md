@@ -1,4 +1,4 @@
-# **Pasos que realizar para este proyecto**
+# **Pasos a realizar para este proyecto**
 
 En la sección "Issues" del Github hay una issue para cada una de las pequeñas tareas. Si queréis hacer una, podéis hacer un clic en la Issue y a la derecha tenéis una parte "Assignees" donde podéis hacer un clic en "Assign yourself" si nadie ya está asignado. Con eso se puede saber muy fácilmente quien hace cada tarea.
 
