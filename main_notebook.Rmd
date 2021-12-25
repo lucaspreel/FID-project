@@ -28,72 +28,118 @@ head(df_train)
 
 ### 2) Exploración y visualización de los datos
 
-Para cada variable, vamos a visuzalizar los valores del dataset de entrenamiento.
+Para conocer un poco más los datos vamos a visuzalizar cada variable del dataset de entrenamiento.
+```{r}
+# Cargamos la librería tidyverse para manipular los datos más facilmente
+
+library(tidyverse)
+```
 
 #### Visualización de la variable "age"
 ```{r}
 
-# Cargamos la librería tidyverse para manipular los datos más facilmente
-
-library(tidyverse)
-
-# creamos una variable que cuenta para cada edad el número de clientes del dataset que tienen esa edad
+# creamos grupos de edad porque hay muchos edades diferentes
+# creamos una variable que cuenta para cada grupo de edad el número de clientes
 
 edad <- df_train %>%
-  group_by(df_train$age) %>%
+  mutate(edad_interval = cut_interval(df_train$age, length = 5)) %>%
+  group_by(edad_interval) %>%
   count()
 
 # visualizamos eso en un gráfico
 
-ggplot(edad, aes(x = `df_train$age` ,y = edad$n)) +
-  geom_point() +
-  ggtitle("Número de clientes en función de la edad") +
-  labs(x="edad", y = "número de clientes") +
-  xlim(20,90)
+ ggplot(edad, aes(x = edad_interval, y=n)) +
+   geom_bar(stat="identity") +
+   ggtitle("Número de clientes en función de la edad") +
+   labs(x="edad", y = "número de clientes")
 ```
 Podemos ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos tienen entre 30 y 40 años.
 
 #### Visualización de la variable "job"
 ```{r}
 
-# creamos una variable que cuenta para cada job el número de clientes del dataset que tienen esa edad
+# creamos una variable que cuenta para cada job el número de clientes, y clasificamos los jobs del que tiene más clientes al que tiene menos
 
 job <- df_train %>%
   group_by(df_train$job) %>%
   count() %>%
   arrange(desc(n))
 
-# visualizamos eso en un gráfico
+# vamos a visualizar en un gráfico circular la repartición de los diferentes jobs
 
-# 
-
-install.packages("viridis")
+# instalamos la paleta de colores "viridis" para la visualización (hace falta instalarla si ya no está instalado)
+# install.packages("viridis")
 library("viridis")
 
-pie(x=job$n, labels = job$`df_train$job`, radius = 1, main = "Número de clientes en función del job", col = viridis(length(x)))
-  
-
-# ggplot(job, aes(x = `df_train$job` ,y = job$n)) +
-#  ggtitle("Número de clientes en función del job") +
-#  labs(x="job", y = "número de clientes") +
-#  geom_histogram(stat="identity")
-
+# construimos el gráfico
+pie(x=job$n,
+    labels = job$`df_train$job`,
+    radius = 1,
+    main = "Número de clientes en función del job",
+    col = viridis(length(job$n)))
 ```
+Ahora podemos ver los jobs mayoritarios entre los clientes.
 
 #### Visualización de la variable "marital"
 ```{r}
 
+# creamos un variable que cuenta para cada estado posible de la variable "marital" el número de clientes que están en este estado
+# clasificamos los estados del que tiene  más clientes al que tiene menos
+
+marital <- df_train %>%
+  group_by(df_train$marital) %>%
+  count() %>%
+  arrange(desc(n))
+
+# visualizamos eso en un gráfico circular (de la misma manera que para la variable "jobs")
+
+pie(x=marital$n,
+    labels = marital$`df_train$marital`,
+    radius = 1,
+    main = "Número de clientes en función del valor de la variable marital",
+    col = viridis(length(marital$n)))
+
 ```
 
 #### Visualización de la variable "education"
+
+De la misma manera que las variables "job" y "marital, "education" es una variable categórica y nominal (es decir que no hay orden entre las diferentes categorías), así que vamos a hacer el mismo tipo de visualización que para las variables "job" y "marital".
+Haremos este tipo de visualización para cada variable categórica nominal y cada variable binaria.
+
 ```{r}
+
+nivel_educación <- df_train %>%
+  group_by(df_train$education) %>%
+  count() %>%
+  arrange(desc(n))
+
+pie(x=nivel_educación$n,
+    labels = nivel_educación$`df_train$education`,
+    radius = 1,
+    main = "Número de clientes en función del nivel de educación",
+    col = viridis(length(nivel_educación$n)))
+
 
 ```
 
 #### Visualización de la variable "default"
+
+Esta variable trata de si los clientes tienen un credito impagado (si o no).
+
 ```{r}
 
+crédito_impagado <- df_train %>%
+  group_by(df_train$default) %>%
+  count()
+
+pie(x=crédito_impagado$n,
+    labels = crédito_impagado$`df_train$default`,
+    radius = 1,
+    main = "Número de clientes en función de si tienen un crédito impagado o no",
+    col = viridis(length(crédito_impagado$n)))
+
 ```
+Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 
 #### Visualización de la variable "balance"
 ```{r}
