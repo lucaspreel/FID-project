@@ -26,7 +26,9 @@ Despues vamos a comparar los resultados obtenidos con el cunjunto de test para e
 
 ## **III. Aprendizaje no supervisado : clustering de los clientes**
 
-Si intentamos aplicar M algoritmos de clustering, esto consiste en M+1 tareas (M algoritmos de clustering y 1 para comparar). Elegimos qué algoritmos de clustering vamos a utilizar cuando terminaremos las tareas de clasificación.
+Hacer un clustering de los datos para ver si podemos identificar varios grupos entre los clientes. Vamos a utilizar los 2 algoritmos que hemos visto en clase :
++ K-Means
++ clustering jerárquico
 
 
 
