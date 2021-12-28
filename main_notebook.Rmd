@@ -78,7 +78,7 @@ pie(x=job$n,
     main = "Número de clientes en función del job",
     col = viridis(length(job$n)))
 ```
-Ahora podemos ver los jobs mayoritarios entre los clientes.
+Ahora podemos ver los jobs mayoritarios entre los clientes
 
 #### Visualización de la variable "marital"
 ```{r}
@@ -142,18 +142,37 @@ pie(x=crédito_impagado$n,
 Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 
 #### Visualización de la variable "balance"
+Esta variable muestra el "" promedio del cliente
 ```{r}
 
 ```
 
 #### Visualización de la variable "housing"
+Esta variable determina si el cliente tiene una propiedad (si o no).
 ```{r}
+housing <- df_train %>%
+  group_by(df_train$default) %>%
+  count()
 
+pie(x=housing$n,
+    labels = housing$`df_train$default`,
+    radius = 1,
+    main = "Número de clientes en función de si tienen una propiedad o no",
+    col = viridis(length(housing$n)))
 ```
 
 #### Visualización de la variable "loan"
+Esta variable determina si el cliente tiene prestamos activos (si o no).
 ```{r}
+loan <- df_train %>%
+  group_by(df_train$default) %>%
+  count()
 
+pie(x=loan$n,
+    labels = loan$`df_train$default`,
+    radius = 1,
+    main = "Número de clientes en función de si tienen un credito activo o no",
+    col = viridis(length(loan$n)))
 ```
 
 #### Visualización de la variable "contact"
