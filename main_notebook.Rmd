@@ -315,6 +315,97 @@ De las métricas de evaluación de desempeño anteriores, observé que Knn tiene
 ### 4) Aplicación de algoritmos de clustering
 
 Para terminar, vamos a aplicar varios algoritmos de clustering para ver si el conjunto de clientes se puede dividir en varios subconjuntos con clientes que se aparecen, y comparar los resultados de estos algoritmos de clustering.
-```{r}
+#### Kmeans Clustering
 
+```{r}
+#aplicando kmeans clustering con k = 2
+set.seed(1)
+df_test2 <- df_testd
+km2 <- kmeans(df_test2[,-c(12)], centers = 2, nstart = 25)
+km2
 ```
+```{r}
+df_test2$cluster = factor(km2$cluster)
+df_test2$cluster
+centers=as.data.frame(km2$centers)
+centers
+```
+
+```{r}
+#Preparar grupos de balance de duración para graficar
+duration_balance= ggplot(data=df_test2, aes(x=duration, y=balance, color=cluster )) + 
+  geom_point() +
+  geom_point(data=centers, aes(x=age,y=balance, color=as.factor(c(1,2))), 
+             size=10, alpha=.3, show.legend=FALSE)#guide=FALSE)
+# Trazar trama de clústeres de duration_balance
+duration_balance
+```
+
+
+
+```{r}
+df_test2$cluster <- ifelse(df_test2$cluster == 1,"no", "yes")
+table(df_test2$y, df_test2$cluster)
+```
+
+
+```{r}
+#aplicando kmeans clustering con k = 3
+set.seed(1)
+df_test3 <- df_testd
+km3 <- kmeans(df_test3[,-c(12)], centers = 3, nstart = 25)
+km3
+```
+
+
+```{r}
+df_test3$cluster = factor(km3$cluster)
+df_test3$cluster
+centers=as.data.frame(km3$centers)
+centers
+```
+
+
+```{r}
+#Preparar grupos de balance de duración para graficar
+duration_balance= ggplot(data=df_test3, aes(x=duration, y=balance, color=cluster )) + 
+  geom_point() +
+  geom_point(data=centers, aes(x=age,y=balance, color=as.factor(c(1,2,3))), 
+             size=10, alpha=.3, show.legend=FALSE)#guide=FALSE)
+#Trazar trama de clústeres de duration_balance
+duration_balance
+```
+
+```{r}
+#aplicando kmeans clustering con k = 3
+set.seed(1)
+df_test4 <- df_testd
+km4 <- kmeans(df_test4[,-c(12)], centers = 4, nstart = 25)
+km4
+```
+
+
+```{r}
+df_test4$cluster = factor(km4$cluster)
+df_test4$cluster
+centers=as.data.frame(km4$centers)
+centers
+```
+
+
+```{r}
+#Preparar grupos de balance de duración para graficar
+duration_balance= ggplot(data=df_test4, aes(x=duration, y=balance, color=cluster )) + 
+  geom_point() +
+  geom_point(data=centers, aes(x=age,y=balance, color=as.factor(c(1,2,3, 4))), 
+             size=10, alpha=.3, show.legend=FALSE)#guide=FALSE)
+#Trazar trama de clústeres de duration_balance
+duration_balance
+```
+
+
+A partir de las visualizaciones, observé que los datos se agrupan más claramente en dos grupos en comparación con tres o cuatro grupos.
+
+
+
+
