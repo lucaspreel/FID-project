@@ -248,6 +248,16 @@ mytree <- rpart(
 mytree
 ```
 
+
+```{r}
+#Trazado del clasificador de árbol de decisión
+#install.packages(rpart.plot)
+library(rpart.plot)
+rpart.plot(mytree)
+```
+
+
+
 ```{r}
 #hacer predicciones sobre datos de prueba
 preds <- predict(mytree, newdata = df_test, type = "class")
