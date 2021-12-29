@@ -4,7 +4,7 @@ output: html_notebook
 ---
 ### 1) Cargamos los datos
 
-Para empezar, cargamos el train set y el test set. sddsfsdfsdfs
+Para empezar, cargamos el train set y el test set.
 ```{r}
 df_train <-read.csv2("data/train.csv")
 df_test <- read.csv2("data/test.csv")
@@ -144,7 +144,10 @@ Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 #### Visualización de la variable "balance"
 Esta variable muestra el "" promedio del cliente
 ```{r}
-
+ggplot(df_train, aes(x = balance)) +
+  geom_histogram(bins = 30) +
+   ggtitle("Número de clientes en función de la equilibrio") +
+   labs(x="equilibrio", y = "número de clientes")
 ```
 
 #### Visualización de la variable "housing"
@@ -177,7 +180,15 @@ pie(x=loan$n,
 
 #### Visualización de la variable "contact"
 ```{r}
+contact <- df_train %>%
+  group_by(df_train$contact) %>%
+  count()
 
+pie(x=contact$n,
+    labels = contact$`df_train$contact`,
+    radius = 1,
+    main = "Número de clientes según el tipo de contacto",
+    col = viridis(length(contact$n)))
 ```
 
 #### Visualización de la variable "day"
@@ -223,9 +234,83 @@ pie(x=loan$n,
 ### 3) Entrenamiento de clasificadores
 Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
 
-```{r}
+#### Árbol de decisión con Rpart
 
+```{r}
+#aplicando árbol de decisión con rpart en datos de entrenamiento
+library(rpart)
+
+mytree <- rpart(
+  y ~ ., 
+  data = df_train, 
+  method = "class"
+)
+mytree
 ```
+
+```{r}
+#hacer predicciones sobre datos de prueba
+preds <- predict(mytree, newdata = df_test, type = "class")
+```
+
+```{r}
+#comprobar la precisión del árbol de decisiones en los datos de prueba
+mean(preds == df_test$y)
+```
+```{r}
+#Matriz de confusión del árbol de decisión sobre los datos de prueba.
+table(df_test$y, preds)
+```
+
+De las métricas de evaluación de desempeño anteriores, observé que el árbol de decisiones con rpart tiene una precisión de 0.90 en los datos de prueba. El árbol de decisión predice 4073 observaciones correctamente de las 4521 observaciones en los datos de prueba.
+
+#### Clasificador Knn
+
+```{r}
+#convertir variables categóricas en numéricas para los datos de entrenamiento
+#install.packages("fastDummies")
+library(fastDummies)
+df_traind <- df_train
+df_traind$default <- ifelse(df_traind$default == "yes",1,0)
+df_traind$housing <- ifelse(df_traind$housing == "yes",1,0)
+df_traind$loan <- ifelse(df_traind$loan == "yes",1,0)
+df_traind$month <- recode(df_traind$month, "jan" = 1, "feb" = 2, "mar" = 3, "apr" = 4,  "may" = 5, "jun" = 6, "jul" = 7, "aug" = 8, "sep" = 9, "oct" = 10, "nov" = 11, "dec" = 12)
+df_traind <- dummy_cols(df_traind,remove_selected_columns = T, select_columns = c("job", "marital", "education", "contact", "poutcome"))
+```
+
+
+```{r}
+#convertir variables categóricas en numéricas para datos de prueba
+df_testd <- df_test
+df_testd$default <- ifelse(df_testd$default == "yes",1,0)
+df_testd$housing <- ifelse(df_testd$housing == "yes",1,0)
+df_testd$loan <- ifelse(df_testd$loan == "yes",1,0)
+
+df_testd$month <- recode(df_testd$month, "jan" = 1, "feb" = 2, "mar" = 3, "apr" = 4,  "may" = 5, "jun" = 6, "jul" = 7, "aug" = 8, "sep" = 9, "oct" = 10, "nov" = 11, "dec" = 12)
+
+df_testd <- dummy_cols(df_testd,remove_selected_columns = T, select_columns = c("job", "marital", "education", "contact", "poutcome"))
+```
+
+
+```{r}
+#aplicando clasificación usando el modelo KNN
+#install.packages("class")
+library(class)
+knn_classifier <- knn(train = df_traind[,-c(12)],
+                      test = df_testd[, -c(12)],
+                      cl = df_traind$y, k = 2)
+```
+
+
+```{r}
+mean(df_testd$y == knn_classifier)
+```
+
+```{r}
+table(df_testd$y, knn_classifier)
+```
+
+De las métricas de evaluación de desempeño anteriores, observé que Knn tiene una precisión de 0.927, el clasificador de Knn predice 4197 de 4521 observaciones correctamente. Dado que el rendimiento del clasificador knn es más alto que el del árbol de decisión con rpart, el clasificador knn se generaliza y se ajusta bien a los datos y funciona mejor que el árbol de decisión con rpart y se puede utilizar para predicciones futuras.
 
 ### 4) Aplicación de algoritmos de clustering
 
