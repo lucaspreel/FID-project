@@ -4,7 +4,7 @@ output: html_notebook
 ---
 ### 1) Cargamos los datos
 
-Para empezar, cargamos el train set y el test set.
+Para empezar, cargamos el train set y el test set. sddsfsdfsdfs
 ```{r}
 df_train <-read.csv2("data/train.csv")
 df_test <- read.csv2("data/test.csv")
