@@ -247,6 +247,9 @@ par(mfrow=c(2,2))
 plot(model)
 ```
 
+El valor de R_squared es 0.04, lo que significa solo el 4% de la variación en la variable de respuesta explicada por las variables de entrada, lo que significa que el modelo no se ajusta bien a los datos.
+
+
 
 ### 3) Entrenamiento de clasificadores
 Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
@@ -433,6 +436,34 @@ duration_balance
 
 A partir de las visualizaciones, observé que los datos se agrupan más claramente en dos grupos en comparación con tres o cuatro grupos.
 
+
+#### Cluseting jerárquico
+
+```{r, warning = F}
+# realizar agrupaciones jerárquicas en datos de prueba
+clusters <- hclust(dist(df_testd))
+group = cutree(clusters, 2)
+
+```
+
+
+```{r}
+#comprobar cuántos valores cumplen con el valor real de y
+group <- ifelse(group == 1, "no", "yes")
+table(df_testd$y, group)
+```
+
+
+```{r}
+# Preparar grupos de balance de duración para graficar
+water_protein= ggplot(data=df_testd, aes(x=duration, y=balance, color=group)) + 
+  geom_point()
+  
+water_protein
+```
+
+
+De la tabla anterior, observé que el agrupamiento jerárquico agrupa casi todos los puntos de datos en 1 grupo que es no. K significa que la agrupación en clústeres también agrupa los puntos de datos como sí, por lo que K significa que la agrupación en clústeres funciona mejor que la agrupación jerárquica.
 
 
 
