@@ -406,6 +406,22 @@ duration_balance= ggplot(data=df_test3, aes(x=duration, y=balance, color=cluster
 duration_balance
 ```
 
+
+
+```{r}
+ggscatter(
+  df_test3, x = "duration", y = "balance", 
+  color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
+  size = 1.5,  legend = "right", ggtheme = theme_bw(),
+  xlab = "Duration",
+  ylab = "Balance"
+) +
+  stat_mean(aes(color = cluster), size = 4)
+```
+
+
+
+
 ```{r}
 #aplicando kmeans clustering con k = 3
 set.seed(1)
@@ -432,6 +448,20 @@ duration_balance= ggplot(data=df_test4, aes(x=duration, y=balance, color=cluster
 #Trazar trama de clústeres de duration_balance
 duration_balance
 ```
+
+
+
+```{r}
+ggscatter(
+  df_test4, x = "duration", y = "balance", 
+  color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
+  size = 1.5,  legend = "right", ggtheme = theme_bw(),
+  xlab = "Duration",
+  ylab = "Balance"
+) +
+  stat_mean(aes(color = cluster), size = 4)
+```
+
 
 
 A partir de las visualizaciones, observé que los datos se agrupan más claramente en dos grupos en comparación con tres o cuatro grupos.
@@ -462,6 +492,19 @@ water_protein= ggplot(data=df_testd, aes(x=duration, y=balance, color=group)) +
 water_protein
 ```
 
+
+
+```{r}
+df_testd$cluster <- group
+ggscatter(
+  df_testd, x = "duration", y = "balance", 
+  color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
+  size = 1.5,  legend = "right", ggtheme = theme_bw(),
+  xlab = "Duration",
+  ylab = "Balance"
+) +
+  stat_mean(aes(color = cluster), size = 4)
+```
 
 De la tabla anterior, observé que el agrupamiento jerárquico agrupa casi todos los puntos de datos en 1 grupo que es no. K significa que la agrupación en clústeres también agrupa los puntos de datos como sí, por lo que K significa que la agrupación en clústeres funciona mejor que la agrupación jerárquica.
 
