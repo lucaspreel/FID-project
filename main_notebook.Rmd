@@ -231,6 +231,23 @@ pie(x=contact$n,
 
 ```
 
+### Regresión
+
+Ahora aplicamos regresión para predecir el saldo del cliente.
+
+
+
+```{r}
+model <- lm(balance ~ ., data = df_traind[,-c(12)])
+summary(model)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(model)
+```
+
+
 ### 3) Entrenamiento de clasificadores
 Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
 
