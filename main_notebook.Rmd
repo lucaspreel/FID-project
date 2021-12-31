@@ -96,7 +96,7 @@ marital <- df_train %>%
 pie(x=marital$n,
     labels = marital$`df_train$marital`,
     radius = 1,
-    main = "Número de clientes en función del valor de la variable marital",
+    main = "Clientes en función del valor de la variable marital",
     col = viridis(length(marital$n)))
 
 ```
@@ -116,7 +116,7 @@ nivel_educación <- df_train %>%
 pie(x=nivel_educación$n,
     labels = nivel_educación$`df_train$education`,
     radius = 1,
-    main = "Número de clientes en función del nivel de educación",
+    main = "Nivel de educación de los clientes",
     col = viridis(length(nivel_educación$n)))
 
 
@@ -135,18 +135,19 @@ crédito_impagado <- df_train %>%
 pie(x=crédito_impagado$n,
     labels = crédito_impagado$`df_train$default`,
     radius = 1,
-    main = "Número de clientes en función de si tienen un crédito impagado o no",
+    main = "Clientes que tienen un crédito impagado y los que no",
     col = viridis(length(crédito_impagado$n)))
 
 ```
 Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 
 #### Visualización de la variable "balance"
-Esta variable muestra el "" promedio del cliente
+Esta variable representa el saldo anual medio de los clientes.
 ```{r}
-ggplot(df_train, aes(x = balance)) +
+ 
+ ggplot(df_train, aes(x = balance)) +
   geom_histogram(bins = 30) +
-   ggtitle("Número de clientes en función de la equilibrio") +
+   ggtitle("Número de clientes en función del saldo anual medio") +
    labs(x="equilibrio", y = "número de clientes")
 ```
 
@@ -154,13 +155,13 @@ ggplot(df_train, aes(x = balance)) +
 Esta variable determina si el cliente tiene una propiedad (si o no).
 ```{r}
 housing <- df_train %>%
-  group_by(df_train$default) %>%
+  group_by(df_train$housing) %>%
   count()
 
 pie(x=housing$n,
-    labels = housing$`df_train$default`,
+    labels = housing$`df_train$housing`,
     radius = 1,
-    main = "Número de clientes en función de si tienen una propiedad o no",
+    main = "Repartición de los clientes en función de si tienen una propiedad o no",
     col = viridis(length(housing$n)))
 ```
 
@@ -168,13 +169,13 @@ pie(x=housing$n,
 Esta variable determina si el cliente tiene prestamos activos (si o no).
 ```{r}
 loan <- df_train %>%
-  group_by(df_train$default) %>%
+  group_by(df_train$loan) %>%
   count()
 
 pie(x=loan$n,
-    labels = loan$`df_train$default`,
+    labels = loan$`df_train$loan`,
     radius = 1,
-    main = "Número de clientes en función de si tienen un credito activo o no",
+    main = "Repartición de los clientes en función de si tienen un credito activo o no",
     col = viridis(length(loan$n)))
 ```
 
@@ -187,7 +188,7 @@ contact <- df_train %>%
 pie(x=contact$n,
     labels = contact$`df_train$contact`,
     radius = 1,
-    main = "Número de clientes según el tipo de contacto",
+    main = "Repartición de los clientes según el tipo de contacto",
     col = viridis(length(contact$n)))
 ```
 
@@ -229,6 +230,16 @@ pie(x=contact$n,
 #### Visualización de la clase final
 ```{r}
 
+clase_final <- df_train %>%
+  group_by(df_train$y) %>%
+  count()
+
+pie(x=clase_final$n,
+    labels = clase_final$`df_train$y`,
+    radius = 1,
+    main = "Número de clientes en función de si han suscrito a un un term deposit",
+    col = viridis(length(clase_final$n)))
+
 ```
 
 ### Regresión
@@ -238,7 +249,7 @@ Ahora aplicamos regresión para predecir el saldo del cliente.
 
 
 ```{r}
-model <- lm(balance ~ ., data = df_traind[,-c(12)])
+model <- lm(balance ~ ., data = df_train[,-c(12)])
 summary(model)
 ```
 
