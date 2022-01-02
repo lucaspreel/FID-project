@@ -143,6 +143,7 @@ Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 
 #### Visualización de la variable "balance"
 Esta variable representa el saldo anual medio de los clientes.
+
 ```{r}
  
  ggplot(df_train, aes(x = balance)) +
@@ -162,6 +163,7 @@ pie(x=housing$n,
     labels = housing$`df_train$housing`,
     radius = 1,
     main = "Repartición de los clientes en función de si tienen una propiedad o no",
+
     col = viridis(length(housing$n)))
 ```
 
@@ -226,18 +228,49 @@ col = viridis(length(contact$n)))
 ```
 
 #### Visualización de la variable "pdays"
+Esta variable hace referencia al numero de días después de haber sido contactado el cliente posterior a una campaña
 ```{r}
+pdays <- df_train %>%
+  group_by(df_train$education) %>%
+  count() %>%
+  arrange(desc(n))
 
+pie(x=pdays$n,
+    labels = pdays$`df_train$education`,
+    radius = 1,
+    main = "Número de clientes en función del número de días despues de ser contactados",
+    col = viridis(length(pdays$n)))
 ```
 
 #### Visualización de la variable "previous"
+Esta variable hace referencia al numero de veces que fue contactado el cliente
 ```{r}
 
+previous <- df_train %>%
+  group_by(df_train$education) %>%
+  count() %>%
+  arrange(desc(n))
+
+pie(x=previous$n,
+    labels = previous$`df_train$education`,
+    radius = 1,
+    main = "Número de veces en función de ser contactado el cliente",
+    col = viridis(length(previous$n)))
 ```
 
 #### Visualización de la variable "poutcome"
+Esta variable hace referencia al resultado de la campaña anterior
 ```{r}
+poutcome <- df_train %>%
+  group_by(df_train$education) %>%
+  count() %>%
+  arrange(desc(n))
 
+pie(x=poutcome$n,
+    labels = poutcome$`df_train$education`,
+    radius = 1,
+    main = "Número de clientes en función del resultado de la campaña anteior",
+    col = viridis(length(poutcome$n)))
 ```
 
 #### Visualización de la clase final
