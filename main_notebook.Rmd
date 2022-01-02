@@ -180,16 +180,29 @@ pie(x=loan$n,
 ```
 
 #### Visualización de la variable "contact"
+Esta variable determina el medio por el cual el cliente fue contactado
+
 ```{r}
+
 contact <- df_train %>%
-  group_by(df_train$contact) %>%
-  count()
+
+group_by(df_train$education) %>%
+
+count() %>%
+
+arrange(desc(n))
+
+
 
 pie(x=contact$n,
-    labels = contact$`df_train$contact`,
-    radius = 1,
-    main = "Repartición de los clientes según el tipo de contacto",
-    col = viridis(length(contact$n)))
+
+labels = contact$`df_train$education`,
+
+radius = 1,
+
+main = "Número de clientes en función del medio por el cuál fueron contactados",
+
+col = viridis(length(contact$n)))
 ```
 
 #### Visualización de la variable "day"
