@@ -346,8 +346,6 @@ plot(model)
 
 El valor de R_squared es 0.04, lo que significa solo el 4% de la variación en la variable de respuesta explicada por las variables de entrada, lo que significa que el modelo no se ajusta bien a los datos.
 
-
-
 ### 3) Entrenamiento de clasificadores
 Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
 
