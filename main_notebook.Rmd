@@ -33,9 +33,15 @@ Para conocer un poco más los datos vamos a visuzalizar cada variable del datase
 # Cargamos la librería tidyverse para manipular los datos más facilmente
 
 library(tidyverse)
+
+# Gracias a eso, ahora podemos utilizar el operador %>% para crear una pipeline en la que aplicamos varias operaciones a los datos (por ejemplo "mutate" para añadir nuevas variables, "select" para guardar solamente las variables que queremos, "filter" para filtrar los datos según valores, etc).
+
 ```
 
 #### Visualización de la variable "age"
+
+Esta variable representa la edad de cada cliente. Es una variable numérica y vamos a visualizarla con un gráfico que representa en el eje "x" la edad y en el eje "y" el número de clientes que tienen esa edad. Sin embargo, como hay muchos edades diferentes vamos a crear grupos de edad para que sea más facil visualizar.
+
 ```{r}
 
 # creamos grupos de edad porque hay muchos edades diferentes
@@ -53,9 +59,12 @@ edad <- df_train %>%
    ggtitle("Número de clientes en función de la edad") +
    labs(x="edad", y = "número de clientes")
 ```
-Podemos ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos tienen entre 30 y 40 años.
+Podemos ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos tienen entre 30 y 40 años. Los clientes representan bien la mayoria de la población trabajadora.
 
 #### Visualización de la variable "job"
+
+Esta variable representa qué tipo de trabajo tiene cada cliente. Es una variable categórica (es decir que la variable sólo puede tomar un número finito de categorías) y nominal (es decir que no hay orden entre las diferentes categorías). Vamos a visualizarla con un gráfico circular.
+
 ```{r}
 
 # creamos una variable que cuenta para cada job el número de clientes, y clasificamos los jobs del que tiene más clientes al que tiene menos
@@ -65,9 +74,7 @@ job <- df_train %>%
   count() %>%
   arrange(desc(n))
 
-# vamos a visualizar en un gráfico circular la repartición de los diferentes jobs
-
-# instalamos la paleta de colores "viridis" para la visualización (hace falta instalarla si ya no está instalado)
+# vamos a utilizar la paleta de colores "viridis" para la visualización (hace falta descomentar la siguiente línea si ya no está instalado)
 # install.packages("viridis")
 library("viridis")
 
@@ -78,9 +85,12 @@ pie(x=job$n,
     main = "Número de clientes en función del job",
     col = viridis(length(job$n)))
 ```
-Ahora podemos ver los jobs mayoritarios entre los clientes
+Ahora podemos ver los jobs mayoritarios entre los clientes. Observamos que los clientes tienen muchos tipos de jobs, así que los datos son representativos de la población (no representan una única categoría profesional).
 
 #### Visualización de la variable "marital"
+
+Esta variable representa la situación marital de cada cliente. Vamos a visuarla de la misma manera que la variable anterior porque es una variable categórica y nominal.
+
 ```{r}
 
 # creamos un variable que cuenta para cada estado posible de la variable "marital" el número de clientes que están en este estado
@@ -101,10 +111,11 @@ pie(x=marital$n,
 
 ```
 
+De nuevo podemos observar que los datos representan bien cada categoría de la población porque hay muchos cientes para cada categoría.
+
 #### Visualización de la variable "education"
 
-De la misma manera que las variables "job" y "marital, "education" es una variable categórica y nominal (es decir que no hay orden entre las diferentes categorías), así que vamos a hacer el mismo tipo de visualización que para las variables "job" y "marital".
-Haremos este tipo de visualización para cada variable categórica nominal y cada variable binaria.
+Esta variable representa el nivel de educación de cada cliente. Es una variable categórica y nominal.
 
 ```{r}
 
@@ -121,10 +132,11 @@ pie(x=nivel_educación$n,
 
 
 ```
+Otra vez podemos ver que los datos representan bien cada categoría de la población.
 
 #### Visualización de la variable "default"
 
-Esta variable trata de si los clientes tienen un credito impagado (si o no).
+Esta variable trata de si los clientes tienen un credito impagado (si o no). Es una variable binaria que también vamos a visualizar con un gráfico circular.
 
 ```{r}
 
@@ -142,18 +154,23 @@ pie(x=crédito_impagado$n,
 Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 
 #### Visualización de la variable "balance"
-Esta variable representa el saldo anual medio de los clientes.
+
+Esta variable representa el saldo anual medio (en euros) de los clientes.
 
 ```{r}
  
  ggplot(df_train, aes(x = balance)) +
   geom_histogram(bins = 30) +
-   ggtitle("Número de clientes en función del saldo anual medio") +
-   labs(x="equilibrio", y = "número de clientes")
+  ggtitle("Número de clientes en función del saldo anual medio") +
+  labs(x="saldo anual medio (euros)", y = "número de clientes") +
+  xlim(-5000, 25000)
 ```
+Podemos ver que la mayoría de los clientes tienen un saldo anual medio cerca de 0 (menos de 5000 euros), mientras que hay una pequeña parte de los clientes que tienen un saldo anual medio más importante. Esto parece ser representativo de la población.
 
 #### Visualización de la variable "housing"
+
 Esta variable determina si el cliente tiene una propiedad (si o no).
+
 ```{r}
 housing <- df_train %>%
   group_by(df_train$housing) %>%
@@ -166,9 +183,12 @@ pie(x=housing$n,
 
     col = viridis(length(housing$n)))
 ```
+Podemos ver que tenemos muchos clientes para ambas categorías.
 
 #### Visualización de la variable "loan"
+
 Esta variable determina si el cliente tiene prestamos activos (si o no).
+
 ```{r}
 loan <- df_train %>%
   group_by(df_train$loan) %>%
@@ -180,100 +200,63 @@ pie(x=loan$n,
     main = "Repartición de los clientes en función de si tienen un credito activo o no",
     col = viridis(length(loan$n)))
 ```
+Muchos clientes no tienen credito activo pero ambas categorías están bien representadas, así que esta variable también parece ser representativo de la población.
 
 #### Visualización de la variable "contact"
-Esta variable determina el medio por el cual el cliente fue contactado
+
+Esta variable determina el medio por el cual el cliente fue contactado.
 
 ```{r}
 
 contact <- df_train %>%
-
-group_by(df_train$education) %>%
-
-count() %>%
-
-arrange(desc(n))
-
-
+  group_by(df_train$contact) %>%
+  count()
 
 pie(x=contact$n,
-
-labels = contact$`df_train$education`,
-
-radius = 1,
-
-main = "Número de clientes en función del medio por el cuál fueron contactados",
-
-col = viridis(length(contact$n)))
+    labels = contact$`df_train$contact`,
+    radius = 1,
+    main = "Número de clientes en función del medio por el cuál fueron contactados",
+    col = viridis(length(contact$n)))
 ```
+No hay mucho que interpretar de este gráfico.
 
 #### Visualización de la variable "day"
+
+Esta variable representa el día del mes en el cual fue contactado el cliente. Puede ser útil tener eso porque puede tener un impacto en la decisión del cliente. Por ejemplo los clientes pueden decir mas facilmente "si" al principio del mes.
+
 ```{r}
+
+ggplot(df_train, aes(x = df_train$day)) +
+  geom_histogram(bins = 31) +
+  ggtitle("Número de clientes en función del día en el cual fueron contactados") +
+  labs(x="día del mes", y = "número de clientes")
 
 ```
 
-#### Visualización de la variable "month"
-```{r}
-
-```
+En general, podemos observar que hay muchos clientes para cada día del mes, así que no hay desequilibrio en los datos.
 
 #### Visualización de la variable "duration"
+
+Esta variable representa la duración de la llamdada (en segundos).
+
 ```{r}
+
+ggplot(df_train, aes(x = df_train$duration)) +
+  geom_histogram(bins = 20) +
+  ggtitle("Número de clientes en función de la duración de la llamada") +
+  labs(x="duración de la llamdada (segundos)", y = "número de clientes") +
+  xlim(0,1000)
 
 ```
 
-#### Visualización de la variable "campaign"
-```{r}
+Sólo podemos observar que la mayoría de las llamadas duran menos de 10 minutos y muchas duran 2-3 minutos.
 
-```
-
-#### Visualización de la variable "pdays"
-Esta variable hace referencia al numero de días después de haber sido contactado el cliente posterior a una campaña
-```{r}
-pdays <- df_train %>%
-  group_by(df_train$education) %>%
-  count() %>%
-  arrange(desc(n))
-
-pie(x=pdays$n,
-    labels = pdays$`df_train$education`,
-    radius = 1,
-    main = "Número de clientes en función del número de días despues de ser contactados",
-    col = viridis(length(pdays$n)))
-```
-
-#### Visualización de la variable "previous"
-Esta variable hace referencia al numero de veces que fue contactado el cliente
-```{r}
-
-previous <- df_train %>%
-  group_by(df_train$education) %>%
-  count() %>%
-  arrange(desc(n))
-
-pie(x=previous$n,
-    labels = previous$`df_train$education`,
-    radius = 1,
-    main = "Número de veces en función de ser contactado el cliente",
-    col = viridis(length(previous$n)))
-```
-
-#### Visualización de la variable "poutcome"
-Esta variable hace referencia al resultado de la campaña anterior
-```{r}
-poutcome <- df_train %>%
-  group_by(df_train$education) %>%
-  count() %>%
-  arrange(desc(n))
-
-pie(x=poutcome$n,
-    labels = poutcome$`df_train$education`,
-    radius = 1,
-    main = "Número de clientes en función del resultado de la campaña anteior",
-    col = viridis(length(poutcome$n)))
-```
+Las visualización de las siguientes variables es de poco interés, así que ahora solo vamos a visualizar la clase final.
 
 #### Visualización de la clase final
+
+Esta variable dice si el cliente ha suscrito a un un term deposit (si o no). La visualización de esta variable permite ver si no hay desequilibrio entre las 2 clases que queremos predecir.
+
 ```{r}
 
 clase_final <- df_train %>%
@@ -287,6 +270,7 @@ pie(x=clase_final$n,
     col = viridis(length(clase_final$n)))
 
 ```
+Podemos observar que hay un pequeño desequilibrio entre las clases pero no demasiado importante.
 
 ### Regresión
 
