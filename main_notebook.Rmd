@@ -28,7 +28,8 @@ head(df_train)
 
 ### 2) Exploración y visualización de los datos
 
-Para conocer un poco más los datos vamos a visuzalizar cada variable del dataset de entrenamiento.
+Para conocer un poco más los datos vamos a visuzalizar las variables del dataset de entrenamiento.
+
 ```{r}
 # Cargamos la librería tidyverse para manipular los datos más facilmente
 
@@ -38,7 +39,7 @@ library(tidyverse)
 
 ```
 
-#### Visualización de la variable "age"
+#### 2.1) Visualización de la variable "age"
 
 Esta variable representa la edad de cada cliente. Es una variable numérica y vamos a visualizarla con un gráfico que representa en el eje "x" la edad y en el eje "y" el número de clientes que tienen esa edad. Sin embargo, como hay muchos edades diferentes vamos a crear grupos de edad para que sea más facil visualizar.
 
@@ -61,7 +62,7 @@ edad <- df_train %>%
 ```
 Podemos ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos tienen entre 30 y 40 años. Los clientes representan bien la mayoria de la población trabajadora.
 
-#### Visualización de la variable "job"
+#### 2.2) Visualización de la variable "job"
 
 Esta variable representa qué tipo de trabajo tiene cada cliente. Es una variable categórica (es decir que la variable sólo puede tomar un número finito de categorías) y nominal (es decir que no hay orden entre las diferentes categorías). Vamos a visualizarla con un gráfico circular.
 
@@ -87,7 +88,7 @@ pie(x=job$n,
 ```
 Ahora podemos ver los jobs mayoritarios entre los clientes. Observamos que los clientes tienen muchos tipos de jobs, así que los datos son representativos de la población (no representan una única categoría profesional).
 
-#### Visualización de la variable "marital"
+#### 2.3) Visualización de la variable "marital"
 
 Esta variable representa la situación marital de cada cliente. Vamos a visuarla de la misma manera que la variable anterior porque es una variable categórica y nominal.
 
@@ -113,7 +114,7 @@ pie(x=marital$n,
 
 De nuevo podemos observar que los datos representan bien cada categoría de la población porque hay muchos cientes para cada categoría.
 
-#### Visualización de la variable "education"
+#### 2.4) Visualización de la variable "education"
 
 Esta variable representa el nivel de educación de cada cliente. Es una variable categórica y nominal.
 
@@ -134,7 +135,7 @@ pie(x=nivel_educación$n,
 ```
 Otra vez podemos ver que los datos representan bien cada categoría de la población.
 
-#### Visualización de la variable "default"
+#### 2.5) Visualización de la variable "default"
 
 Esta variable trata de si los clientes tienen un credito impagado (si o no). Es una variable binaria que también vamos a visualizar con un gráfico circular.
 
@@ -153,7 +154,7 @@ pie(x=crédito_impagado$n,
 ```
 Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 
-#### Visualización de la variable "balance"
+#### 2.6) Visualización de la variable "balance"
 
 Esta variable representa el saldo anual medio (en euros) de los clientes.
 
@@ -165,9 +166,9 @@ Esta variable representa el saldo anual medio (en euros) de los clientes.
   labs(x="saldo anual medio (euros)", y = "número de clientes") +
   xlim(-5000, 25000)
 ```
-Podemos ver que la mayoría de los clientes tienen un saldo anual medio cerca de 0 (menos de 5000 euros), mientras que hay una pequeña parte de los clientes que tienen un saldo anual medio más importante. Esto parece ser representativo de la población.
+Podemos ver que la mayoría de los clientes tienen un saldo anual medio cerca de 0 (menos de 5000 euros), mientras que hay una pequeña parte de los clientes que tienen un saldo anual medio más importante. Esto parece ser representativo de la población. Además, no se ve en el gráfico porque el eje "x" se para en 25 000 pero hay algunos clientes con un saldo anual medio muy grande que podemos considerar como outliers.
 
-#### Visualización de la variable "housing"
+#### 2.7) Visualización de la variable "housing"
 
 Esta variable determina si el cliente tiene una propiedad (si o no).
 
@@ -185,7 +186,7 @@ pie(x=housing$n,
 ```
 Podemos ver que tenemos muchos clientes para ambas categorías.
 
-#### Visualización de la variable "loan"
+#### 2.8) Visualización de la variable "loan"
 
 Esta variable determina si el cliente tiene prestamos activos (si o no).
 
@@ -202,7 +203,7 @@ pie(x=loan$n,
 ```
 Muchos clientes no tienen credito activo pero ambas categorías están bien representadas, así que esta variable también parece ser representativo de la población.
 
-#### Visualización de la variable "contact"
+#### 2.9) Visualización de la variable "contact"
 
 Esta variable determina el medio por el cual el cliente fue contactado.
 
@@ -220,7 +221,7 @@ pie(x=contact$n,
 ```
 No hay mucho que interpretar de este gráfico.
 
-#### Visualización de la variable "day"
+#### 2.10) Visualización de la variable "day"
 
 Esta variable representa el día del mes en el cual fue contactado el cliente. Puede ser útil tener eso porque puede tener un impacto en la decisión del cliente. Por ejemplo los clientes pueden decir mas facilmente "si" al principio del mes.
 
@@ -235,7 +236,7 @@ ggplot(df_train, aes(x = df_train$day)) +
 
 En general, podemos observar que hay muchos clientes para cada día del mes, así que no hay desequilibrio en los datos.
 
-#### Visualización de la variable "duration"
+#### 2.11) Visualización de la variable "duration"
 
 Esta variable representa la duración de la llamdada (en segundos).
 
@@ -253,7 +254,7 @@ Sólo podemos observar que la mayoría de las llamadas duran menos de 10 minutos
 
 Las visualización de las siguientes variables es de poco interés, así que ahora solo vamos a visualizar la clase final.
 
-#### Visualización de la clase final
+#### 2.12) Visualización de la clase final
 
 Esta variable dice si el cliente ha suscrito a un un term deposit (si o no). La visualización de esta variable permite ver si no hay desequilibrio entre las 2 clases que queremos predecir.
 
@@ -279,33 +280,42 @@ Para concluir sobre esta parte de visualización, podemos decir que tenemos much
 Ahora vamos a aplicar técnicas de regresión que hemos visto en clase para hacer predicciones.
 Más precisamente, lo que vamos a hacer es intentar predecir el saldo anual medio de un cliente a partir de las otras variables.
 
-#### 3.1) Regresion lineal simple
+#### 3.1) Preprocesamiento
+
+Hemos visto en la parte de visualización que hay outliers en los valores del saldo anual medio. Por lo tanto, vamos a eliminar los clientes con un saldo anual medio superior a 15 000, ya que pueden impedir que el modelo se ajuste a los datos correctamente.
+
+```{r}
+datos_sin_outliers <- df_train %>%
+  filter(balance < 15000)
+```
+
+#### 3.2) Regresion lineal simple
 
 Primero vamos a ver si es posible predecir el saldo anual medio con solamente una variable que es la variable edad. Podemos suponer que es dificil hacer eso pero al menos podemos ver si hay una tendencia que hace que las personas mayores tienen un saldo anual más alto por ejemplo.
 
 Para empezar ponemos en un gráfico el saldo anual en función de la edad.
 
 ```{r}
-plot(x = df_train$age,
-     y = df_train$balance,
+plot(x = datos_sin_outliers$age,
+     y = datos_sin_outliers$balance,
      main = "saldo anual medio en función de la edad",
      xlab="edad",
      ylab="saldo anual medio",
-     ylim=c(-5000, 25000))
+     ylim=c(-5000, 15000))
 ```
 No podemos ver muchas cosas con eso. Ahora vamos a calcular y dibujar una recta de regresión en el gráfico.
 
 ```{r}
 # Calculamos la regresión
-lineal_simple <- lm(balance ~ age, data = df_train)
+lineal_simple <- lm(balance ~ age, data = datos_sin_outliers)
 
 # Ponemos otra vez el gráfico pero con la recta de regresión
-plot(x = df_train$age,
-     y = df_train$balance,
+plot(x = datos_sin_outliers$age,
+     y = datos_sin_outliers$balance,
      main = "saldo anual medio en función de la edad",
      xlab="edad",
      ylab="saldo anual medio",
-     ylim=c(-5000, 25000))
+     ylim=c(-5000, 15000))
 abline(lineal_simple$coefficients, col = "red")
 
 ```
@@ -317,35 +327,37 @@ Hay una pequeña pendiente que parece decir que las personas mayores tienen un s
 saldo_anual_prediccion <- predict(lineal_simple)
 
 # Calculamos la diferencia con el valor real
-diferencia <- df_train$balance - saldo_anual_prediccion
+diferencia <- datos_sin_outliers$balance - saldo_anual_prediccion
 
 # Calculamos el valor del R_square
 #   -> calculamos la suma de los residuos (= varianza del saldo anual medio que no se puede explicar cón la regresión)
 #   -> calculamos la suma tota de la varianza del saldo anual medio
 #   -> utilizamos la formula que permite calcular el R_square
 suma_residuos <- sum(diferencia^2)
-suma_total <- sum((df_train$balance - mean(df_train$balance)) ^ 2)
+suma_total <- sum((datos_sin_outliers$balance - mean(datos_sin_outliers$balance)) ^ 2)
 r_square <- 1 - (suma_residuos / suma_total)
 print(paste("R_square = ", r_square))
 ```
 Tenemos un R_square muy cerca de 0, lo que significa que nuestro modelo de regresión es muy malo y que sólo la edad no es suficiente para predecir el saldo anual medio de un cliente (lo que de hecho parece bastante lógico).
 
-#### 3.2) Regresión multivariable
+#### 3.3) Regresión multivariable
 
 Ahora vamos a intentar predecir el saldo anual de un cliente pero mirando a todas las otras variables y no sólo la edad.
 
 ```{r}
-model <- lm(balance ~ ., data = df_train[,-c(12)])
-summary(model)
+
+# Construimos el modelo de regresión
+multivariable <- lm(balance ~ ., data = datos_sin_outliers)
+# Observamos todas las métricas
+summary(multivariable)
 ```
+El valor de R_squared es 0.06, lo que significa que solo el 6% de la variación del saldo anual medio se puede explicar con las variables de entrada, lo que significa que el modelo no se ajusta bien a los datos. Puede ser que las otras variables no tienen mucha influencia en el saldo anual medio.
 
 ```{r}
+# Algunos gráficos para visualiza un poco los resultados de la regresión
 par(mfrow=c(2,2))
 plot(model)
 ```
-
-El valor de R_squared es 0.04, lo que significa solo el 4% de la variación en la variable de respuesta explicada por las variables de entrada, lo que significa que el modelo no se ajusta bien a los datos.
-
 ### 3) Entrenamiento de clasificadores
 Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
 
