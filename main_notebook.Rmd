@@ -359,7 +359,7 @@ El valor de R_squared es 0.06, lo que significa que solo el 6% de la variación 
 ```{r}
 # Algunos gráficos para visualiza un poco los resultados de la regresión
 par(mfrow=c(2,2))
-plot(model)
+plot(multivariable)
 ```
 ### 4) Aprendizaje supervisado : entrenamiento de clasificadores
 
@@ -554,6 +554,7 @@ duration_balance
 
 
 ```{r}
+library(ggpubr)
 ggscatter(
   df_test3, x = "duration", y = "balance", 
   color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
