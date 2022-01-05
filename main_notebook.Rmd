@@ -5,12 +5,14 @@ output: html_notebook
 ### 1) Cargamos los datos
 
 Para empezar, cargamos el train set y el test set.
+
 ```{r}
 df_train <-read.csv2("data/train.csv")
 df_test <- read.csv2("data/test.csv")
 ```
 
 Verificamos las dimensiones del dataset de entrenamiento y del dataset de test.
+
 ```{r}
 dim_train = dim(df_train)
 print(paste("El cunjunto de entrenamiento tiene ", dim_train[1],"valores y ", dim_train[2], "variables." ))
@@ -21,6 +23,7 @@ print(paste("El cunjunto de test tiene ", dim_test[1],"valores y ", dim_test[2],
 ```
 
 Visualizamos el header del dataset de entrenamiento para ver un poco los datos.
+
 ```{r}
 head(df_train)
 ```
@@ -227,7 +230,7 @@ Esta variable representa el día del mes en el cual fue contactado el cliente. P
 
 ```{r}
 
-ggplot(df_train, aes(x = df_train$day)) +
+ggplot(df_train, aes(x = day)) +
   geom_histogram(bins = 31) +
   ggtitle("Número de clientes en función del día en el cual fueron contactados") +
   labs(x="día del mes", y = "número de clientes")
@@ -242,7 +245,7 @@ Esta variable representa la duración de la llamdada (en segundos).
 
 ```{r}
 
-ggplot(df_train, aes(x = df_train$duration)) +
+ggplot(df_train, aes(x = duration)) +
   geom_histogram(bins = 20) +
   ggtitle("Número de clientes en función de la duración de la llamada") +
   labs(x="duración de la llamdada (segundos)", y = "número de clientes") +
@@ -319,7 +322,7 @@ plot(x = datos_sin_outliers$age,
 abline(lineal_simple$coefficients, col = "red")
 
 ```
-Hay una pequeña pendiente que parece decir que las personas mayores tienen un saldo anual medio un poco más alto. Pero para evaluar la calidad de la regresión vamos a calcular una métrica de evaluación : el R_square que varía entre 0 (malo) y 1 (bueno).
+Hay una pequeña pendiente que parece decir que las personas mayores tienen un saldo anual medio un poco más alto. Pero para evaluar la calidad de la regresión vamos a calcular una métrica de evaluación : el R_square que es un valor entre 0 (malo) y 1 (bueno). 
 
 ```{r}
 
@@ -332,7 +335,7 @@ diferencia <- datos_sin_outliers$balance - saldo_anual_prediccion
 # Calculamos el valor del R_square
 #   -> calculamos la suma de los residuos (= varianza del saldo anual medio que no se puede explicar cón la regresión)
 #   -> calculamos la suma tota de la varianza del saldo anual medio
-#   -> utilizamos la formula que permite calcular el R_square
+#   -> utilizamos la formula que permite calcular el R_square (= porcentaje de la varianza total que se puede explicar con la regresión)
 suma_residuos <- sum(diferencia^2)
 suma_total <- sum((datos_sin_outliers$balance - mean(datos_sin_outliers$balance)) ^ 2)
 r_square <- 1 - (suma_residuos / suma_total)
@@ -358,13 +361,21 @@ El valor de R_squared es 0.06, lo que significa que solo el 6% de la variación 
 par(mfrow=c(2,2))
 plot(model)
 ```
-### 3) Entrenamiento de clasificadores
+### 4) Aprendizaje supervisado : entrenamiento de clasificadores
+
 Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
 
-#### Árbol de decisión con Rpart
+#### 4.1) Árbol de decisión
+
+rpart (Rercursive Partitioning And Regression Trees) es una librería que permite entrenar arboles de decisión para hacer predicciones. Vamos a utilizarla para construir un árbol de decisión que permite predecir el valor de la variable "y" que representa la respuesta del cliente (si o no) para suscribir a un term deposit. 
 
 ```{r}
-#aplicando árbol de decisión con rpart en datos de entrenamiento
+
+# descomentar las siguientes líneas si ya no están instalados los packages "rattle" y "rpart.plot"
+# install.packages("rattle")
+# install.packages(rpart.plot)
+
+# construimos el árbol
 library(rpart)
 
 mytree <- rpart(
@@ -372,40 +383,49 @@ mytree <- rpart(
   data = df_train, 
   method = "class"
 )
+
+# miramos al árbol construido
 mytree
 ```
 
 
 ```{r}
-#Trazado del clasificador de árbol de decisión
-#install.packages(rpart.plot)
+# Trazamos el árbol de decisión
 library(rpart.plot)
 rpart.plot(mytree)
 ```
 
-
+Podemos ver que las duración de la llamada y el éxito (o no) de la campaña de marketing anterior tienen mucho impacto en el resultado.
 
 ```{r}
-#hacer predicciones sobre datos de prueba
+# Hacemos predicciones sobre datos de prueba
 preds <- predict(mytree, newdata = df_test, type = "class")
 ```
 
 ```{r}
-#comprobar la precisión del árbol de decisiones en los datos de prueba
-mean(preds == df_test$y)
+#comprobamos la precisión del árbol de decisiones en los datos de prueba
+precision = mean(preds == df_test$y)
+print(paste("El árbol clasifica bien ",precision*100,"% de los datos."))
 ```
-```{r}
-#Matriz de confusión del árbol de decisión sobre los datos de prueba.
-table(df_test$y, preds)
-```
-
-De las métricas de evaluación de desempeño anteriores, observé que el árbol de decisiones con rpart tiene una precisión de 0.90 en los datos de prueba. El árbol de decisión predice 4073 observaciones correctamente de las 4521 observaciones en los datos de prueba.
-
-#### Clasificador Knn
+Este resultado parece bueno, pero no significa que el clasificador es bueno : por ejemplo si tenemos 90% de los clientes que dicen "no", un clasificador estúpido que clasifica todos los clientes como clientes que van a decir "no" tiene 90% de precisión, por eso tenemos que mirar a la matriz de confusión para verificar que el algoritmo funciona bien.
 
 ```{r}
-#convertir variables categóricas en numéricas para los datos de entrenamiento
-#install.packages("fastDummies")
+# Matriz de confusión del árbol de decisión sobre los datos de prueba.
+matriz_confusion = table(df_test$y, preds)
+matriz_confusion
+```
+
+Podemos ver que el clasificador no es estúpido y clasifica bastante bien tanto los clientes que dan una respuesta positiva como los que dans una respuesta negativa. 
+
+#### 4.2) Clasificador Knn
+
+Ahora vamos a utilizar el algoritmo Knn (K-Nearest-Neighbors) que hemos visto en clase para hacer la clasificación.
+
+Primero tenemos que convertir las variables categóricas en variables numéricas porque con el algoritmo KNN hace falta calcular la distancia entre los datos y para hacer eso necesitamos variables numéricas.
+
+```{r}
+# convertir variables categóricas en numéricas para los datos de entrenamiento
+# install.packages("fastDummies")
 library(fastDummies)
 df_traind <- df_train
 df_traind$default <- ifelse(df_traind$default == "yes",1,0)
@@ -428,31 +448,49 @@ df_testd$month <- recode(df_testd$month, "jan" = 1, "feb" = 2, "mar" = 3, "apr" 
 df_testd <- dummy_cols(df_testd,remove_selected_columns = T, select_columns = c("job", "marital", "education", "contact", "poutcome"))
 ```
 
+Ahora vamos a aplicar el algoritmo, pero para eso tenemos que elegir con qué valor de "k" (= número de vecinos más cercanos) vamos a aplicar el algoritmo.
+
+No podemos saber de antemano cuál es el mejor valor para k, por lo tanto vamos a aplicar el algoritmo con varios valores de k y elegir el valor que da los mejores resultados. (Como entrenamos varios clasificadores es normal si la ejecución del siguiente código lleva algunos minutos)
 
 ```{r}
-#aplicando clasificación usando el modelo KNN
-#install.packages("class")
+# # descomentar la siguiente línea si ya no está instalado el package "class"
+# install.packages("class")
 library(class)
-knn_classifier <- knn(train = df_traind[,-c(12)],
+
+# vamos a aplicar el algoritmo con valores k de 2 a 10
+range <- 2:10
+accs <- rep(0, length(range))
+
+for (k in range) {
+  # entrenamos el clasificador
+  clasificador <- knn(train = df_traind[,-c(12)],
                       test = df_testd[, -c(12)],
-                      cl = df_traind$y, k = 2)
-```
+                      cl = df_traind$y, k = k)
+  
+  # calculamos la matriz de confusión
+  matriz_confusion <- table(df_testd$y, clasificador)
+  
+  # calculamos la precisión
+  accs[k-1] <- sum(diag(matriz_confusion)) / sum(matriz_confusion)
+}
 
+# Visualizamos la precisión para cada valor de k
+plot(range, accs, xlab = "k")
+```
+Vemos en el gráfico que tenemos buenos resultados (precisión superior al 90%) con todos los valores de k, y tenemos una precisión de más de 92% con k=2 y k=3. Vamos a calcular más precisamente la precisión que tenemos con k = 2.
 
 ```{r}
-mean(df_testd$y == knn_classifier)
+k_best = which.max(accs) + 1
+precision_best = accs[which.max(accs)]
+print(paste("El mejor número de vecinos es k =", k_best,"y tenemos una precisión de ",precision_best*100,"%." ))
 ```
 
-```{r}
-table(df_testd$y, knn_classifier)
-```
+Dado que el rendimiento del clasificador KNN es más alto que el del árbol de decisión, el clasificador knn se generaliza y se ajusta bien a los datos y funciona mejor que el árbol de decisión y se puede utilizar para predicciones futuras.
 
-De las métricas de evaluación de desempeño anteriores, observé que Knn tiene una precisión de 0.927, el clasificador de Knn predice 4197 de 4521 observaciones correctamente. Dado que el rendimiento del clasificador knn es más alto que el del árbol de decisión con rpart, el clasificador knn se generaliza y se ajusta bien a los datos y funciona mejor que el árbol de decisión con rpart y se puede utilizar para predicciones futuras.
-
-### 4) Aplicación de algoritmos de clustering
+### 5) Aplicación de algoritmos de clustering
 
 Para terminar, vamos a aplicar varios algoritmos de clustering para ver si el conjunto de clientes se puede dividir en varios subconjuntos con clientes que se aparecen, y comparar los resultados de estos algoritmos de clustering.
-#### Kmeans Clustering
+#### 5.1) Kmeans Clustering
 
 ```{r}
 #aplicando kmeans clustering con k = 2
@@ -574,7 +612,7 @@ ggscatter(
 A partir de las visualizaciones, observé que los datos se agrupan más claramente en dos grupos en comparación con tres o cuatro grupos.
 
 
-#### Cluseting jerárquico
+#### 5.2) Cluseting jerárquico
 
 ```{r, warning = F}
 # realizar agrupaciones jerárquicas en datos de prueba
