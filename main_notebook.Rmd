@@ -274,11 +274,65 @@ Podemos observar que hay un pequeño desequilibrio entre las clases pero no dema
 
 Para concluir sobre esta parte de visualización, podemos decir que tenemos muchos datos (más de 47 000), y además son datos muy completos que representan muchos tipos de clientes diferentes. Por lo tanto, es un buen conjunto de datos para entrenar modelos predictivos.
 
-### Regresión
+### 3) Aprendizaje supervisado : entrenamiento de un algoritmo de regresión
 
-Ahora aplicamos regresión para predecir el saldo del cliente.
+Ahora vamos a aplicar técnicas de regresión que hemos visto en clase para hacer predicciones.
+Más precisamente, lo que vamos a hacer es intentar predecir el saldo anual medio de un cliente a partir de las otras variables.
 
+#### 3.1) Regresion lineal simple
 
+Primero vamos a ver si es posible predecir el saldo anual medio con solamente una variable que es la variable edad. Podemos suponer que es dificil hacer eso pero al menos podemos ver si hay una tendencia que hace que las personas mayores tienen un saldo anual más alto por ejemplo.
+
+Para empezar ponemos en un gráfico el saldo anual en función de la edad.
+
+```{r}
+plot(x = df_train$age,
+     y = df_train$balance,
+     main = "saldo anual medio en función de la edad",
+     xlab="edad",
+     ylab="saldo anual medio",
+     ylim=c(-5000, 25000))
+```
+No podemos ver muchas cosas con eso. Ahora vamos a calcular y dibujar una recta de regresión en el gráfico.
+
+```{r}
+# Calculamos la regresión
+lineal_simple <- lm(balance ~ age, data = df_train)
+
+# Ponemos otra vez el gráfico pero con la recta de regresión
+plot(x = df_train$age,
+     y = df_train$balance,
+     main = "saldo anual medio en función de la edad",
+     xlab="edad",
+     ylab="saldo anual medio",
+     ylim=c(-5000, 25000))
+abline(lineal_simple$coefficients, col = "red")
+
+```
+Hay una pequeña pendiente que parece decir que las personas mayores tienen un saldo anual medio un poco más alto. Pero para evaluar la calidad de la regresión vamos a calcular una métrica de evaluación : el R_square que varía entre 0 (malo) y 1 (bueno).
+
+```{r}
+
+# Para cada cliente intentamos predecir el saldo anual medio a partir de la edad
+saldo_anual_prediccion <- predict(lineal_simple)
+
+# Calculamos la diferencia con el valor real
+diferencia <- df_train$balance - saldo_anual_prediccion
+
+# Calculamos el valor del R_square
+#   -> calculamos la suma de los residuos (= varianza del saldo anual medio que no se puede explicar cón la regresión)
+#   -> calculamos la suma tota de la varianza del saldo anual medio
+#   -> utilizamos la formula que permite calcular el R_square
+suma_residuos <- sum(diferencia^2)
+suma_total <- sum((df_train$balance - mean(df_train$balance)) ^ 2)
+r_square <- 1 - (suma_residuos / suma_total)
+print(paste("R_square = ", r_square))
+```
+Tenemos un R_square muy cerca de 0, lo que significa que nuestro modelo de regresión es muy malo y que sólo la edad no es suficiente para predecir el saldo anual medio de un cliente (lo que de hecho parece bastante lógico).
+
+#### 3.2) Regresión multivariable
+
+Ahora vamos a intentar predecir el saldo anual de un cliente pero mirando a todas las otras variables y no sólo la edad.
 
 ```{r}
 model <- lm(balance ~ ., data = df_train[,-c(12)])
