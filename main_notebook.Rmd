@@ -272,6 +272,8 @@ pie(x=clase_final$n,
 ```
 Podemos observar que hay un pequeño desequilibrio entre las clases pero no demasiado importante.
 
+Para concluir sobre esta parte de visualización, podemos decir que tenemos muchos datos (más de 47 000), y además son datos muy completos que representan muchos tipos de clientes diferentes. Por lo tanto, es un buen conjunto de datos para entrenar modelos predictivos.
+
 ### Regresión
 
 Ahora aplicamos regresión para predecir el saldo del cliente.
