@@ -565,5 +565,18 @@ ggscatter(
 
 De la tabla anterior, observé que el agrupamiento jerárquico agrupa casi todos los puntos de datos en 1 grupo que es no. K significa que la agrupación en clústeres también agrupa los puntos de datos como sí, por lo que K significa que la agrupación en clústeres funciona mejor que la agrupación jerárquica.
 
+#### Cluseting jerárquico, dendograma
 
+```{r, warning = F}
+# realizar agrupaciones jerárquicas
+
+Datos <-read.csv2("data/test.csv")
+# Dissimilarity matrix
+disMat <- dist(Datos, method = "euclidean")
+modelo <- hclust(disMat, method = "ward.D2")
+plot(modelo, cex = 0.6, hang = -1)
+rect.hclust(modelo, k = 3, border = "magenta")
+
+
+```
 
