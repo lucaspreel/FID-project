@@ -209,12 +209,30 @@ col = viridis(length(contact$n)))
 
 #### Visualización de la variable "day"
 ```{r}
+dia <- df_train %>%
+  mutate(dia_interval = cut_interval(df_train$day, length = 7)) %>%
+  group_by(dia_interval) %>%
+  count()
 
+# visualizamos eso en un gráfico
+
+ ggplot(dia, aes(x = dia_interval, y=n)) +
+   geom_bar(stat="identity") +
+   ggtitle("Número de clientes en función del día") +
+   labs(x="dia", y = "número de clientes")
 ```
 
 #### Visualización de la variable "month"
 ```{r}
+mes <- df_train %>%
+#No se realiza agrupación 
 
+# visualizamos eso en un gráfico
+
+ ggplot(mes, aes(x = mes, y=n)) +
+   geom_bar(stat="identity") +
+   ggtitle("Número de clientes en función del mes") +
+   labs(x="mes", y = "número de clientes")
 ```
 
 #### Visualización de la variable "duration"
