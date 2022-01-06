@@ -244,37 +244,11 @@ En general, se puede observar que hay muchos clientes para cada día del mes, as
 Esta variable representa la duración de la llamada (en segundos).
 
 ```{r}
-dia <- df_train %>%
-  mutate(dia_interval = cut_interval(df_train$day, length = 7)) %>%
-  group_by(dia_interval) %>%
-  count()
-
-# visualizamos eso en un gráfico
-
- ggplot(dia, aes(x = dia_interval, y=n)) +
-   geom_bar(stat="identity") +
-   ggtitle("Número de clientes en función del día") +
-   labs(x="dia", y = "número de clientes")
-```
-
-#### Visualización de la variable "month"
-```{r}
-mes <- df_train %>%
-#No se realiza agrupación
-=======
 ggplot(df_train, aes(x = duration)) +
   geom_histogram(bins = 20) +
   ggtitle("Número de clientes en función de la duración de la llamada") +
   labs(x="duración de la llamdada (segundos)", y = "número de clientes") +
   xlim(0,1000)
->>>>>>> 92346a1007e7613afd9f76a5ed6ee784bc312b8d
-
-# visualizamos eso en un gráfico
-
- ggplot(mes, aes(x = mes, y=n)) +
-   geom_bar(stat="identity") +
-   ggtitle("Número de clientes en función del mes") +
-   labs(x="mes", y = "número de clientes")
 ```
 
 Sólo se puede observar que la mayoría de las llamadas duran menos de 10 minutos y muchas duran 2-3 minutos.
@@ -501,7 +475,7 @@ for (k in range) {
 # Se visualiza la precisión para cada valor de k
 plot(range, accs, xlab = "k")
 ```
-Se ve en el gráfico que hay buenos resultados (precisión superior al 90%) con todos los valores de k, y hay una precisión de más de 92% con k=2 y k=3. Se va a calcular con más detalle la precisión que se obtiene con k = 2.
+Se ve en el gráfico que hay buenos resultados (precisión superior al 90%) con todos los valores de k, y hay una precisión de más de 92% con k=2 y k=3. Se va a calcular con más detalle la precisión que se obtiene con el mejor k.
 
 ```{r}
 k_best = which.max(accs) + 1
