@@ -489,7 +489,7 @@ Dado que el rendimiento del clasificador KNN es más alto que el del árbol de d
 
 ### 5) Aplicación de algoritmos de clustering
 
-Para terminar, se van a aplicar varios algoritmos de clustering para ver si el conjunto de clientes se puede dividir en varios subconjuntos con clientes que se aparecen, y comparar los resultados de estos algoritmos de clustering.
+Para terminar, se van a aplicar varios algoritmos de clustering para ver si el conjunto de clientes se puede dividir en varios subconjuntos con clientes que se parecen, y comparar los resultados de estos algoritmos de clustering.
 
 #### 5.1) Kmeans Clustering
 
