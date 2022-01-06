@@ -491,179 +491,55 @@ Para terminar, se van a aplicar varios algoritmos de clustering para ver si el c
 
 #### 5.1) Kmeans Clustering
 
-```{r}
-#aplicando kmeans clustering con k = 2
-set.seed(1)
-df_test2 <- df_testd
-km2 <- kmeans(df_test2[,-c(12)], centers = 2, nstart = 25)
-km2
-```
-```{r}
-df_test2$cluster = factor(km2$cluster)
-df_test2$cluster
-centers=as.data.frame(km2$centers)
-centers
-```
+Primero se va a utilizar el algoritmo KMeans visto en clase. No se puede saber de antemano cuál es el número óptimo de clusters, así que se va a intentar hacer el clustering con varios números de clusters (se va a hacerlo para k = 2 a 7) y elegir lo mejor.
+
+Para hacer eso, se va a calcular para cada valor de k el WSS (Within cluster Sum of Square). WWS es una métrica que calcula si los datos que pertenecen a un mismo cluster están cerca, por lo tanto el objetivo es tener un valor lo más pequeño posible para WWS. Cuando se aumenta el número de clusters, el WWS siempre baja, pero no queremos un número de clusters igual que el número de datos, por lo tanto lo que se hace para elegir el número de clusters óptimo es visualizar en un gráfico el valor de WWS para varios valores de k, y elegir el número de cluster que corresponde a un "codo" en el gráfico. En efecto este valor coresponde al nivel en lo que aumentar el número de clusters no aporta mucho.
 
 ```{r}
-#Preparar grupos de balance de duración para graficar
-duration_balance= ggplot(data=df_test2, aes(x=duration, y=balance, color=cluster )) +
-  geom_point() +
-  geom_point(data=centers, aes(x=age,y=balance, color=as.factor(c(1,2))),
-             size=10, alpha=.3, show.legend=FALSE)#guide=FALSE)
-# Trazar trama de clústeres de duration_balance
-duration_balance
+
+# Se initializa el WSS que se va a calcular
+wss<-0
+
+
+# Se aplica el algorimto para k de 2 a 7
+for(k in 2:7){
+  set.seed(1)
+  km <- kmeans(df_traind[,-c(12)], centers = k, nstart = 25)
+  wss[k-1] <- km$tot.withinss
+}
 ```
-
-
 
 ```{r}
-df_test2$cluster <- ifelse(df_test2$cluster == 1,"no", "yes")
-table(df_test2$y, df_test2$cluster)
+
+# Se construye la ventana en la que se va a visualizar los resultados
+par(mfrow = c(1,1))
+
+# Se visualizan los valores de WWS para los distintos valores de k
+plot(2:7, wss, type = "b", 
+     xlab = "Numero de clusters",
+     ylab = "WWS")
 ```
-
-
-```{r}
-#aplicando kmeans clustering con k = 3
-set.seed(1)
-df_test3 <- df_testd
-km3 <- kmeans(df_test3[,-c(12)], centers = 3, nstart = 25)
-km3
-```
-
-
-```{r}
-df_test3$cluster = factor(km3$cluster)
-df_test3$cluster
-centers=as.data.frame(km3$centers)
-centers
-```
-
-
-```{r}
-#Preparar grupos de balance de duración para graficar
-duration_balance= ggplot(data=df_test3, aes(x=duration, y=balance, color=cluster )) +
-  geom_point() +
-  geom_point(data=centers, aes(x=age,y=balance, color=as.factor(c(1,2,3))),
-             size=10, alpha=.3, show.legend=FALSE)#guide=FALSE)
-#Trazar trama de clústeres de duration_balance
-duration_balance
-```
-
-
-
-```{r}
-library(ggpubr)
-ggscatter(
-  df_test3, x = "duration", y = "balance",
-  color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
-  size = 1.5,  legend = "right", ggtheme = theme_bw(),
-  xlab = "Duration",
-  ylab = "Balance"
-) +
-  stat_mean(aes(color = cluster), size = 4)
-```
-
-
-
-
-```{r}
-#aplicando kmeans clustering con k = 3
-set.seed(1)
-df_test4 <- df_testd
-km4 <- kmeans(df_test4[,-c(12)], centers = 4, nstart = 25)
-km4
-```
-
-
-```{r}
-df_test4$cluster = factor(km4$cluster)
-df_test4$cluster
-centers=as.data.frame(km4$centers)
-centers
-```
-
-
-```{r}
-#Preparar grupos de balance de duración para graficar
-duration_balance= ggplot(data=df_test4, aes(x=duration, y=balance, color=cluster )) +
-  geom_point() +
-  geom_point(data=centers, aes(x=age,y=balance, color=as.factor(c(1,2,3, 4))),
-             size=10, alpha=.3, show.legend=FALSE)#guide=FALSE)
-#Trazar trama de clústeres de duration_balance
-duration_balance
-```
-
-
-
-```{r}
-ggscatter(
-  df_test4, x = "duration", y = "balance",
-  color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
-  size = 1.5,  legend = "right", ggtheme = theme_bw(),
-  xlab = "Duration",
-  ylab = "Balance"
-) +
-  stat_mean(aes(color = cluster), size = 4)
-```
-
-
-
-A partir de las visualizaciones, se observó que los datos se agrupan más claramente en dos grupos en comparación con tres o cuatro grupos.
+Se puede ver un pequeño codo para k=3, aunque no es muy pronunciado. Por lo tanto el mejor número de cluster es 3.
 
 
 #### 5.2) Cluseting jerárquico
 
-```{r, warning = F}
-# realizar agrupaciones jerárquicas en datos de prueba
-clusters <- hclust(dist(df_testd))
-group = cutree(clusters, 2)
 
-```
-
-
+Se va a aplicar un clustering jerárquico con varios números de cluster y se van a visualizar los resultados con dendrogramas.
 ```{r}
-#comprobar cuántos valores cumplen con el valor real de y
-group <- ifelse(group == 1, "no", "yes")
-table(df_testd$y, group)
-```
-
-
-```{r}
-# Preparar grupos de balance de duración para graficar
-water_protein= ggplot(data=df_testd, aes(x=duration, y=balance, color=group)) +
-  geom_point()
-
-water_protein
-```
-
-
-
-```{r}
-df_testd$cluster <- group
-ggscatter(
-  df_testd, x = "duration", y = "balance",
-  color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
-  size = 1.5,  legend = "right", ggtheme = theme_bw(),
-  xlab = "Duration",
-  ylab = "Balance"
-) +
-  stat_mean(aes(color = cluster), size = 4)
-```
-
-De la tabla anterior, se observó que el agrupamiento jerárquico agrupa casi todos los puntos de datos en 1 grupo que es no. K significa que la agrupación en clústeres también agrupa los puntos de datos como sí, por lo que K significa que la agrupación en clústeres funciona mejor que la agrupación jerárquica.
-
-#### Cluseting jerárquico, dendograma
-
-```{r, warning = F}
-# realizar agrupaciones jerárquicas
-
-Datos <-read.csv2("data/test.csv")
-# Dissimilarity matrix
+# Se dice que se va a utilizar la distancia euclidiena para calcular la distancia entre los datos
 disMat <- dist(Datos, method = "euclidean")
+
+# Se utilice el algoritmo y se indica que se calcula la distancia entre los clusters con Ward's method
+
 modelo <- hclust(disMat, method = "ward.D2")
 plot(modelo, cex = 0.6, hang = -1)
-rect.hclust(modelo, k = 3, border = "magenta")
+rect.hclust(modelo, k = 2, border = "magenta")
+```
 
+```{r}
+
+plot(modelo, cex = 0.6, hang = -1)
+rect.hclust(modelo, k = 3, border = "magenta")
 
 ```
