@@ -4,15 +4,13 @@ output: html_notebook
 ---
 ### 1) Cargamos los datos
 
-Para empezar, se carga el train set y el test set.
-
+Para empezar, cargamos el train set y el test set.
 ```{r}
 df_train <-read.csv2("data/train.csv")
 df_test <- read.csv2("data/test.csv")
 ```
 
-Se verifican las dimensiones del dataset de entrenamiento y del dataset de test.
-
+Verificamos las dimensiones del dataset de entrenamiento y del dataset de test.
 ```{r}
 dim_train = dim(df_train)
 print(paste("El cunjunto de entrenamiento tiene ", dim_train[1],"valores y ", dim_train[2], "variables." ))
@@ -22,8 +20,7 @@ print(paste("El cunjunto de test tiene ", dim_test[1],"valores y ", dim_test[2],
 
 ```
 
-Se visualiza el header del dataset de entrenamiento para ver un poco los datos.
-
+Visualizamos el header del dataset de entrenamiento para ver un poco los datos.
 ```{r}
 head(df_train)
 ```
@@ -31,81 +28,70 @@ head(df_train)
 
 ### 2) Exploración y visualización de los datos
 
-Para conocer un poco más los datos se procede a visualizar las variables del dataset de entrenamiento.
-
+Para conocer un poco más los datos vamos a visuzalizar cada variable del dataset de entrenamiento.
 ```{r}
-# Se carga la librería tidyverse para manipular los datos más facilmente
+# Cargamos la librería tidyverse para manipular los datos más facilmente
 
 library(tidyverse)
-
-# Gracias a eso, ahora se puede utilizar el operador %>% para crear una pipeline en la que se apliquen varias operaciones a los datos (por ejemplo "mutate" para añadir nuevas variables, "select" para guardar solamente las variables que queremos, "filter" para filtrar los datos según valores, etc).
-
 ```
 
-#### 2.1) Visualización de la variable "age"
-
-Esta variable representa la edad de cada cliente. Es una variable numérica y se va a visualizar con un gráfico que representa en el eje "x" la edad y en el eje "y" el número de clientes que tienen esa edad. Sin embargo, como hay muchos edades diferentes se van a crear grupos de edad para que sea más facil visualizar.
-
+#### Visualización de la variable "age"
 ```{r}
 
-# se crean grupos de edad porque hay muchos edades diferentes
-# se crea una variable que cuenta para cada grupo de edad el número de clientes
+# creamos grupos de edad porque hay muchos edades diferentes
+# creamos una variable que cuenta para cada grupo de edad el número de clientes
 
 edad <- df_train %>%
   mutate(edad_interval = cut_interval(df_train$age, length = 5)) %>%
   group_by(edad_interval) %>%
   count()
 
-# se visualiza eso en un gráfico
+# visualizamos eso en un gráfico
 
  ggplot(edad, aes(x = edad_interval, y=n)) +
    geom_bar(stat="identity") +
    ggtitle("Número de clientes en función de la edad") +
    labs(x="edad", y = "número de clientes")
 ```
-Se puede ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos tienen entre 30 y 40 años. Los clientes representan bien la mayoria de la población trabajadora.
+Podemos ver que la mayoria de los clientes tienen entre 25 y 60 años y muchos tienen entre 30 y 40 años.
 
-#### 2.2) Visualización de la variable "job"
-
-Esta variable representa qué tipo de trabajo tiene cada cliente. Es una variable categórica (es decir que la variable sólo puede tomar un número finito de categorías) y nominal (es decir que no hay orden entre las diferentes categorías). Se va a visualizar con un gráfico circular.
-
+#### Visualización de la variable "job"
 ```{r}
 
-# se crea una variable que cuenta para cada job el número de clientes, y se clasifican los jobs del que tiene más clientes al que tiene menos
+# creamos una variable que cuenta para cada job el número de clientes, y clasificamos los jobs del que tiene más clientes al que tiene menos
 
 job <- df_train %>%
   group_by(df_train$job) %>%
   count() %>%
   arrange(desc(n))
 
-# se va a utilizar la paleta de colores "viridis" para la visualización (hace falta descomentar la siguiente línea si ya no está instalado)
+# vamos a visualizar en un gráfico circular la repartición de los diferentes jobs
+
+# instalamos la paleta de colores "viridis" para la visualización (hace falta instalarla si ya no está instalado)
 # install.packages("viridis")
 library("viridis")
 
-# se construye el gráfico
+# construimos el gráfico
 pie(x=job$n,
     labels = job$`df_train$job`,
     radius = 1,
     main = "Número de clientes en función del job",
     col = viridis(length(job$n)))
 ```
-Ahora se pueden ver los jobs mayoritarios entre los clientes. Se observa que los clientes tienen muchos tipos de jobs, así que los datos son representativos de la población (no representan una única categoría profesional).
+Ahora podemos ver los jobs mayoritarios entre los clientes
 
-#### 2.3) Visualización de la variable "marital"
-
-Esta variable representa la situación marital de cada cliente. Se va a visuar de la misma manera que la variable anterior porque es una variable categórica y nominal.
-
+#### Visualización de la variable "marital"
 ```{r}
 
-# se crear una variable que cuenta para cada estado posible de la variable "marital" el número de clientes que están en este estado
-# se clasifican los estados del que tiene  más clientes al que tiene menos
+# creamos un variable que cuenta para cada estado posible de la variable "marital" el número de clientes que están en este estado
+# clasificamos los estados del que tiene  más clientes al que tiene menos
 
 marital <- df_train %>%
   group_by(df_train$marital) %>%
   count() %>%
   arrange(desc(n))
 
-# se visualiza eso en un gráfico circular (de la misma manera que para la variable "jobs")
+# visualizamos eso en un gráfico circular (de la misma manera que para la variable "jobs")
 
 pie(x=marital$n,
     labels = marital$`df_train$marital`,
@@ -115,11 +101,10 @@ pie(x=marital$n,
 
 ```
 
-De nuevo se puede observar que los datos representan bien cada categoría de la población porque hay muchos cientes para cada categoría.
+#### Visualización de la variable "education"
 
-#### 2.4) Visualización de la variable "education"
-
-Esta variable representa el nivel de educación de cada cliente. Es una variable categórica y nominal.
+De la misma manera que las variables "job" y "marital, "education" es una variable categórica y nominal (es decir que no hay orden entre las diferentes categorías), así que vamos a hacer el mismo tipo de visualización que para las variables "job" y "marital".
+Haremos este tipo de visualización para cada variable categórica nominal y cada variable binaria.
 
 ```{r}
 
@@ -136,11 +121,10 @@ pie(x=nivel_educación$n,
 
 
 ```
-Otra vez se puede ver que los datos representan bien cada categoría de la población.
 
-#### 2.5) Visualización de la variable "default"
+#### Visualización de la variable "default"
 
-Esta variable trata de si los clientes tienen un credito impagado (si o no). Es una variable binaria que también se va a visualizar con un gráfico circular.
+Esta variable trata de si los clientes tienen un credito impagado (si o no).
 
 ```{r}
 
@@ -155,26 +139,21 @@ pie(x=crédito_impagado$n,
     col = viridis(length(crédito_impagado$n)))
 
 ```
-Se puede ver que la mayoría de los clientes no tienen crédito impagado.
+Podemos ver que la mayoría de los clientes no tienen crédito impagado.
 
-#### 2.6) Visualización de la variable "balance"
-
-Esta variable representa el saldo anual medio (en euros) de los clientes.
+#### Visualización de la variable "balance"
+Esta variable representa el saldo anual medio de los clientes.
 
 ```{r}
  
  ggplot(df_train, aes(x = balance)) +
   geom_histogram(bins = 30) +
-  ggtitle("Número de clientes en función del saldo anual medio") +
-  labs(x="saldo anual medio (euros)", y = "número de clientes") +
-  xlim(-5000, 25000)
+   ggtitle("Número de clientes en función del saldo anual medio") +
+   labs(x="equilibrio", y = "número de clientes")
 ```
-Se puede ver que la mayoría de los clientes tienen un saldo anual medio cerca de 0 (menos de 5000 euros), mientras que hay una pequeña parte de los clientes que tienen un saldo anual medio más importante. Esto parece ser representativo de la población. Además, no se ve en el gráfico porque el eje "x" se para en 25 000 pero hay algunos clientes con un saldo anual medio muy grande que se pueden considerar como outliers.
 
-#### 2.7) Visualización de la variable "housing"
-
+#### Visualización de la variable "housing"
 Esta variable determina si el cliente tiene una propiedad (si o no).
-
 ```{r}
 housing <- df_train %>%
   group_by(df_train$housing) %>%
@@ -187,12 +166,9 @@ pie(x=housing$n,
 
     col = viridis(length(housing$n)))
 ```
-Se puede ver que hay muchos clientes para ambas categorías.
 
-#### 2.8) Visualización de la variable "loan"
-
+#### Visualización de la variable "loan"
 Esta variable determina si el cliente tiene prestamos activos (si o no).
-
 ```{r}
 loan <- df_train %>%
   group_by(df_train$loan) %>%
@@ -204,45 +180,34 @@ pie(x=loan$n,
     main = "Repartición de los clientes en función de si tienen un credito activo o no",
     col = viridis(length(loan$n)))
 ```
-Muchos clientes no tienen credito activo pero ambas categorías están bien representadas, así que esta variable también parece ser representativo de la población.
 
-#### 2.9) Visualización de la variable "contact"
-
-Esta variable determina el medio por el cual el cliente fue contactado.
+#### Visualización de la variable "contact"
+Esta variable determina el medio por el cual el cliente fue contactado
 
 ```{r}
 
 contact <- df_train %>%
-  group_by(df_train$contact) %>%
-  count()
+
+group_by(df_train$education) %>%
+
+count() %>%
+
+arrange(desc(n))
+
+
 
 pie(x=contact$n,
-    labels = contact$`df_train$contact`,
-    radius = 1,
-    main = "Número de clientes en función del medio por el cuál fueron contactados",
-    col = viridis(length(contact$n)))
-```
-No hay mucho que interpretar de este gráfico.
 
-#### 2.10) Visualización de la variable "day"
+labels = contact$`df_train$education`,
 
-Esta variable representa el día del mes en el cual fue contactado el cliente. Puede ser útil tener eso porque puede tener un impacto en la decisión del cliente. Por ejemplo los clientes pueden decir mas facilmente "si" al principio del mes.
+radius = 1,
 
-```{r}
+main = "Número de clientes en función del medio por el cuál fueron contactados",
 
-ggplot(df_train, aes(x = day)) +
-  geom_histogram(bins = 31) +
-  ggtitle("Número de clientes en función del día en el cual fueron contactados") +
-  labs(x="día del mes", y = "número de clientes")
-
+col = viridis(length(contact$n)))
 ```
 
-En general, se puede observar que hay muchos clientes para cada día del mes, así que no hay desequilibrio en los datos.
-
-#### 2.11) Visualización de la variable "duration"
-
-Esta variable representa la duración de la llamdada (en segundos).
-
+#### Visualización de la variable "day"
 ```{r}
 dia <- df_train %>%
   mutate(dia_interval = cut_interval(df_train$day, length = 7)) %>%
@@ -251,7 +216,6 @@ dia <- df_train %>%
 
 # visualizamos eso en un gráfico
 
-<<<<<<< HEAD
  ggplot(dia, aes(x = dia_interval, y=n)) +
    geom_bar(stat="identity") +
    ggtitle("Número de clientes en función del día") +
@@ -262,13 +226,6 @@ dia <- df_train %>%
 ```{r}
 mes <- df_train %>%
 #No se realiza agrupación 
-=======
-ggplot(df_train, aes(x = duration)) +
-  geom_histogram(bins = 20) +
-  ggtitle("Número de clientes en función de la duración de la llamada") +
-  labs(x="duración de la llamdada (segundos)", y = "número de clientes") +
-  xlim(0,1000)
->>>>>>> 92346a1007e7613afd9f76a5ed6ee784bc312b8d
 
 # visualizamos eso en un gráfico
 
@@ -278,14 +235,63 @@ ggplot(df_train, aes(x = duration)) +
    labs(x="mes", y = "número de clientes")
 ```
 
-Sólo se puede observar que la mayoría de las llamadas duran menos de 10 minutos y muchas duran 2-3 minutos.
+#### Visualización de la variable "duration"
+```{r}
 
-Las visualización de las siguientes variables es de poco interés, así que ahora solo se va a visualizar la clase final.
+```
 
-#### 2.12) Visualización de la clase final
+#### Visualización de la variable "campaign"
+```{r}
 
-Esta variable dice si el cliente ha suscrito a un un term deposit (si o no). La visualización de esta variable permite ver si no hay desequilibrio entre las 2 clases que queremos predecir.
+```
 
+#### Visualización de la variable "pdays"
+Esta variable hace referencia al numero de días después de haber sido contactado el cliente posterior a una campaña
+```{r}
+pdays <- df_train %>%
+  group_by(df_train$education) %>%
+  count() %>%
+  arrange(desc(n))
+
+pie(x=pdays$n,
+    labels = pdays$`df_train$education`,
+    radius = 1,
+    main = "Número de clientes en función del número de días despues de ser contactados",
+    col = viridis(length(pdays$n)))
+```
+
+#### Visualización de la variable "previous"
+Esta variable hace referencia al numero de veces que fue contactado el cliente
+```{r}
+
+previous <- df_train %>%
+  group_by(df_train$education) %>%
+  count() %>%
+  arrange(desc(n))
+
+pie(x=previous$n,
+    labels = previous$`df_train$education`,
+    radius = 1,
+    main = "Número de veces en función de ser contactado el cliente",
+    col = viridis(length(previous$n)))
+```
+
+#### Visualización de la variable "poutcome"
+Esta variable hace referencia al resultado de la campaña anterior
+```{r}
+poutcome <- df_train %>%
+  group_by(df_train$education) %>%
+  count() %>%
+  arrange(desc(n))
+
+pie(x=poutcome$n,
+    labels = poutcome$`df_train$education`,
+    radius = 1,
+    main = "Número de clientes en función del resultado de la campaña anteior",
+    col = viridis(length(poutcome$n)))
+```
+
+#### Visualización de la clase final
 ```{r}
 
 clase_final <- df_train %>%
@@ -299,108 +305,34 @@ pie(x=clase_final$n,
     col = viridis(length(clase_final$n)))
 
 ```
-Se puede observar que hay un pequeño desequilibrio entre las clases pero no demasiado importante.
 
-Para concluir sobre esta parte de visualización, se puede decir que hay muchos datos (más de 47 000), y además son datos muy completos que representan muchos tipos de clientes diferentes. Por lo tanto, es un buen conjunto de datos para entrenar modelos predictivos.
+### Regresión
 
-### 3) Aprendizaje supervisado : entrenamiento de un algoritmo de regresión
+Ahora aplicamos regresión para predecir el saldo del cliente.
 
-Ahora se van a aplicar técnicas de regresión aprendidas en clase para hacer predicciones.
-Más precisamente, lo que se va a hacer es intentar predecir el saldo anual medio de un cliente a partir de las otras variables.
 
-#### 3.1) Preprocesamiento
-
-Se ha visto en la parte de visualización que hay outliers en los valores del saldo anual medio. Por lo tanto, se van a eliminar los clientes con un saldo anual medio superior a 15 000, ya que pueden impedir que el modelo se ajuste a los datos correctamente.
 
 ```{r}
-datos_sin_outliers <- df_train %>%
-  filter(balance < 15000)
+model <- lm(balance ~ ., data = df_train[,-c(12)])
+summary(model)
 ```
 
-#### 3.2) Regresion lineal simple
-
-Primero se verificará si es posible predecir el saldo anual medio con solamente una variable que es la variable edad. Se puede suponer que es dificil hacer eso pero al menos se puede ver si hay una tendencia que hace que las personas mayores tienen un saldo anual más alto, por ejemplo.
-
-Para empezar se pone en un gráfico el saldo anual en función de la edad.
-
 ```{r}
-plot(x = datos_sin_outliers$age,
-     y = datos_sin_outliers$balance,
-     main = "saldo anual medio en función de la edad",
-     xlab="edad",
-     ylab="saldo anual medio",
-     ylim=c(-5000, 15000))
-```
-No se pueden ver muchas cosas con eso. Ahora se va a calcular y dibujar una recta de regresión en el gráfico.
-
-```{r}
-# Calculamos la regresión
-lineal_simple <- lm(balance ~ age, data = datos_sin_outliers)
-
-# Ponemos otra vez el gráfico pero con la recta de regresión
-plot(x = datos_sin_outliers$age,
-     y = datos_sin_outliers$balance,
-     main = "saldo anual medio en función de la edad",
-     xlab="edad",
-     ylab="saldo anual medio",
-     ylim=c(-5000, 15000))
-abline(lineal_simple$coefficients, col = "red")
-
-```
-Hay una pequeña pendiente que parece decir que las personas mayores tienen un saldo anual medio un poco más alto. Pero para evaluar la calidad de la regresión se va a calcular una métrica de evaluación : el R_square que es un valor entre 0 (malo) y 1 (bueno). 
-
-```{r}
-
-# Para cada cliente se intenta predecir el saldo anual medio a partir de la edad
-saldo_anual_prediccion <- predict(lineal_simple)
-
-# Se calcula la diferencia con el valor real
-diferencia <- datos_sin_outliers$balance - saldo_anual_prediccion
-
-# Se calcula el valor del R_square
-#   -> se calcula la suma de los residuos (= varianza del saldo anual medio que no se puede explicar con la regresión)
-#   -> se calcula la suma total de la varianza del saldo anual medio
-#   -> se utiliza la fórmula que permite calcular el R_square (= porcentaje de la varianza total que se puede explicar con la regresión)
-suma_residuos <- sum(diferencia^2)
-suma_total <- sum((datos_sin_outliers$balance - mean(datos_sin_outliers$balance)) ^ 2)
-r_square <- 1 - (suma_residuos / suma_total)
-print(paste("R_square = ", r_square))
-```
-Se tiene un R_square muy cerca de 0, lo que significa que este modelo de regresión es muy malo y que sólo la edad no es suficiente para predecir el saldo anual medio de un cliente (lo que de hecho parece bastante lógico).
-
-#### 3.3) Regresión multivariable
-
-Ahora se intentará predecir el saldo anual de un cliente pero mirando a todas las otras variables y no sólo la edad.
-
-```{r}
-
-# Se construye el modelo de regresión
-multivariable <- lm(balance ~ ., data = datos_sin_outliers)
-# Se observan todas las métricas
-summary(multivariable)
-```
-El valor de R_squared es 0.06, lo que significa que solo el 6% de la variación del saldo anual medio se puede explicar con las variables de entrada, lo que significa que el modelo no se ajusta bien a los datos. Puede ser que las otras variables no tienen mucha influencia en el saldo anual medio.
-
-```{r}
-# Algunos gráficos para visualizar un poco los resultados de la regresión
 par(mfrow=c(2,2))
-plot(multivariable)
+plot(model)
 ```
-### 4) Aprendizaje supervisado : entrenamiento de clasificadores
 
-Ahora, se van a entrenar varios clasificadores para predecir si el cliente es interesante o no. Se va a probar cada clasificador con el conjunto de test y despues se va a comparar los resultados de cada uno para elegir lo mejor.
+El valor de R_squared es 0.04, lo que significa solo el 4% de la variación en la variable de respuesta explicada por las variables de entrada, lo que significa que el modelo no se ajusta bien a los datos.
 
-#### 4.1) Árbol de decisión
 
-rpart (Rercursive Partitioning And Regression Trees) es una librería que permite entrenar árboles de decisión para hacer predicciones. Se va a utilizar para construir un árbol de decisión que permite predecir el valor de la variable "y" que representa la respuesta del cliente (si o no) para suscribir a un term deposit. 
+
+### 3) Entrenamiento de clasificadores
+Ahora, vamos a entrenar varios clasificadores para predecir si el cliente es interesante o no. Vamos a probar cada clasificador con el conjunto de test y despues vamos a comparar los resultados de cada uno para elegir lo mejor.
+
+#### Árbol de decisión con Rpart
 
 ```{r}
-
-# descomentar las siguientes líneas si ya no están instalados los packages "rattle" y "rpart.plot"
-# install.packages("rattle")
-# install.packages(rpart.plot)
-
-# se construye el árbol
+#aplicando árbol de decisión con rpart en datos de entrenamiento
 library(rpart)
 
 mytree <- rpart(
@@ -408,49 +340,40 @@ mytree <- rpart(
   data = df_train, 
   method = "class"
 )
-
-# se imprime el árbol construido
 mytree
 ```
 
 
 ```{r}
-# Se traza el árbol de decisión
+#Trazado del clasificador de árbol de decisión
+#install.packages(rpart.plot)
 library(rpart.plot)
 rpart.plot(mytree)
 ```
 
-Se puede ver que la duración de la llamada y el éxito (o no) de la campaña de marketing anterior tienen mucho impacto en el resultado.
+
 
 ```{r}
-# Se hacen predicciones sobre datos de prueba
+#hacer predicciones sobre datos de prueba
 preds <- predict(mytree, newdata = df_test, type = "class")
 ```
 
 ```{r}
-#se comprueba la precisión del árbol de decisión en los datos de prueba
-precision = mean(preds == df_test$y)
-print(paste("El árbol clasifica bien ",precision*100,"% de los datos."))
+#comprobar la precisión del árbol de decisiones en los datos de prueba
+mean(preds == df_test$y)
 ```
-Este resultado parece bueno, pero no significa que el clasificador es bueno : por ejemplo si se tiene 90% de los clientes que dicen "no", un clasificador estúpido que clasifica todos los clientes como clientes que van a decir "no" tiene 90% de precisión, por eso hay que mirar a la matriz de confusión para verificar que el algoritmo funciona bien.
-
 ```{r}
-# Matriz de confusión del árbol de decisión sobre los datos de prueba.
-matriz_confusion = table(df_test$y, preds)
-matriz_confusion
+#Matriz de confusión del árbol de decisión sobre los datos de prueba.
+table(df_test$y, preds)
 ```
 
-Se puede ver que el clasificador no es estúpido y clasifica bastante bien tanto los clientes que dan una respuesta positiva como los que dans una respuesta negativa. 
+De las métricas de evaluación de desempeño anteriores, observé que el árbol de decisiones con rpart tiene una precisión de 0.90 en los datos de prueba. El árbol de decisión predice 4073 observaciones correctamente de las 4521 observaciones en los datos de prueba.
 
-#### 4.2) Clasificador Knn
-
-Ahora se va a utilizar el algoritmo Knn (K-Nearest-Neighbors), visto en clase para hacer la clasificación.
-
-Primero hay que que convertir las variables categóricas en variables numéricas porque con el algoritmo KNN hace falta calcular la distancia entre los datos y para hacer eso se necesitan variables numéricas.
+#### Clasificador Knn
 
 ```{r}
-# convertir variables categóricas en numéricas para los datos de entrenamiento
-# install.packages("fastDummies")
+#convertir variables categóricas en numéricas para los datos de entrenamiento
+#install.packages("fastDummies")
 library(fastDummies)
 df_traind <- df_train
 df_traind$default <- ifelse(df_traind$default == "yes",1,0)
@@ -473,50 +396,31 @@ df_testd$month <- recode(df_testd$month, "jan" = 1, "feb" = 2, "mar" = 3, "apr" 
 df_testd <- dummy_cols(df_testd,remove_selected_columns = T, select_columns = c("job", "marital", "education", "contact", "poutcome"))
 ```
 
-Ahora se va a aplicar el algoritmo, pero para eso hace falta elegir con qué valor de "k" (= número de vecinos más cercanos) se va a aplicar el algoritmo.
-
-No se puede saber de antemano cuál es el mejor valor para k, por lo tanto se va a aplicar el algoritmo con varios valores de k y elegir el valor que da los mejores resultados. (Como se entrenaron varios clasificadores es normal si la ejecución del siguiente código lleva algunos minutos)
 
 ```{r}
-# # descomentar la siguiente línea si ya no está instalado el package "class"
-# install.packages("class")
+#aplicando clasificación usando el modelo KNN
+#install.packages("class")
 library(class)
-
-# se va a aplicar el algoritmo con valores k de 2 a 10
-range <- 2:10
-accs <- rep(0, length(range))
-
-for (k in range) {
-  # se entrena el clasificador
-  clasificador <- knn(train = df_traind[,-c(12)],
+knn_classifier <- knn(train = df_traind[,-c(12)],
                       test = df_testd[, -c(12)],
-                      cl = df_traind$y, k = k)
-  
-  # se calcula la matriz de confusión
-  matriz_confusion <- table(df_testd$y, clasificador)
-  
-  # se calcula la precisión
-  accs[k-1] <- sum(diag(matriz_confusion)) / sum(matriz_confusion)
-}
-
-# Se visualiza la precisión para cada valor de k
-plot(range, accs, xlab = "k")
+                      cl = df_traind$y, k = 2)
 ```
-Se ve en el gráfico que hay buenos resultados (precisión superior al 90%) con todos los valores de k, y hay una precisión de más de 92% con k=2 y k=3. Se va a calcular con más detalle la precisión que se obtiene con k = 2.
+
 
 ```{r}
-k_best = which.max(accs) + 1
-precision_best = accs[which.max(accs)]
-print(paste("El mejor número de vecinos es k =", k_best,"y tenemos una precisión de ",precision_best*100,"%." ))
+mean(df_testd$y == knn_classifier)
 ```
 
-Dado que el rendimiento del clasificador KNN es más alto que el del árbol de decisión, el clasificador knn se generaliza y se ajusta bien a los datos y funciona mejor que el árbol de decisión y se puede utilizar para predicciones futuras.
+```{r}
+table(df_testd$y, knn_classifier)
+```
 
-### 5) Aplicación de algoritmos de clustering
+De las métricas de evaluación de desempeño anteriores, observé que Knn tiene una precisión de 0.927, el clasificador de Knn predice 4197 de 4521 observaciones correctamente. Dado que el rendimiento del clasificador knn es más alto que el del árbol de decisión con rpart, el clasificador knn se generaliza y se ajusta bien a los datos y funciona mejor que el árbol de decisión con rpart y se puede utilizar para predicciones futuras.
 
-Para terminar, se van a aplicar varios algoritmos de clustering para ver si el conjunto de clientes se puede dividir en varios subconjuntos con clientes que se parecen, y comparar los resultados de estos algoritmos de clustering.
+### 4) Aplicación de algoritmos de clustering
 
-#### 5.1) Kmeans Clustering
+Para terminar, vamos a aplicar varios algoritmos de clustering para ver si el conjunto de clientes se puede dividir en varios subconjuntos con clientes que se aparecen, y comparar los resultados de estos algoritmos de clustering.
+#### Kmeans Clustering
 
 ```{r}
 #aplicando kmeans clustering con k = 2
@@ -580,7 +484,6 @@ duration_balance
 
 
 ```{r}
-library(ggpubr)
 ggscatter(
   df_test3, x = "duration", y = "balance", 
   color = "cluster", palette = "npg", ellipse = TRUE, ellipse.type = "convex",
@@ -636,10 +539,10 @@ ggscatter(
 
 
 
-A partir de las visualizaciones, se observó que los datos se agrupan más claramente en dos grupos en comparación con tres o cuatro grupos.
+A partir de las visualizaciones, observé que los datos se agrupan más claramente en dos grupos en comparación con tres o cuatro grupos.
 
 
-#### 5.2) Cluseting jerárquico
+#### Cluseting jerárquico
 
 ```{r, warning = F}
 # realizar agrupaciones jerárquicas en datos de prueba
@@ -678,7 +581,7 @@ ggscatter(
   stat_mean(aes(color = cluster), size = 4)
 ```
 
-De la tabla anterior, se observó que el agrupamiento jerárquico agrupa casi todos los puntos de datos en 1 grupo que es no. K significa que la agrupación en clústeres también agrupa los puntos de datos como sí, por lo que K significa que la agrupación en clústeres funciona mejor que la agrupación jerárquica.
+De la tabla anterior, observé que el agrupamiento jerárquico agrupa casi todos los puntos de datos en 1 grupo que es no. K significa que la agrupación en clústeres también agrupa los puntos de datos como sí, por lo que K significa que la agrupación en clústeres funciona mejor que la agrupación jerárquica.
 
 
 
