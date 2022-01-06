@@ -115,7 +115,7 @@ pie(x=marital$n,
 
 ```
 
-De nuevo se puede puede observar que los datos representan bien cada categoría de la población porque hay muchos cientes para cada categoría.
+De nuevo se puede observar que los datos representan bien cada categoría de la población porque hay muchos cientes para cada categoría.
 
 #### 2.4) Visualización de la variable "education"
 
