@@ -525,7 +525,8 @@ Se puede ver un pequeño codo para k=3, aunque no es muy pronunciado. Por lo tan
 #### 5.2) Cluseting jerárquico
 
 
-Se va a aplicar un clustering jerárquico con varios números de cluster y se van a visualizar los resultados con dendrogramas.
+Se va a aplicar un clustering jerárquico con un número de cluster k = 3 y se va a visualizar el resultado con un dendrograma.
+
 ```{r}
 # Se dice que se va a utilizar la distancia euclidiena para calcular la distancia entre los datos
 disMat <- dist(Datos, method = "euclidean")
@@ -534,12 +535,6 @@ disMat <- dist(Datos, method = "euclidean")
 
 modelo <- hclust(disMat, method = "ward.D2")
 plot(modelo, cex = 0.6, hang = -1)
-rect.hclust(modelo, k = 2, border = "magenta")
-```
-
-```{r}
-
-plot(modelo, cex = 0.6, hang = -1)
 rect.hclust(modelo, k = 3, border = "magenta")
-
 ```
+
